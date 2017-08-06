@@ -1,0 +1,93 @@
+package com.estrelsteel.wowbot.command.sys;
+
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import com.estrelsteel.wowbot.WowBot;
+import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.user.UserHandler;
+
+public class Help implements Command {
+	
+	private WowBot b;
+	private String[] cmds;
+	
+	public Help(WowBot b) {
+		this.b = b;
+		cmds = new String[19];
+		int i = 0;
+		cmds[i] = "assemble"; i++;
+		cmds[i] = "changelog"; i++;
+		cmds[i] = "clean"; i++;
+		cmds[i] = "colour"; i++;
+		cmds[i] = "event"; i++;
+		cmds[i] = "help"; i++;
+		cmds[i] = "info"; i++;
+		cmds[i] = "kaomoji"; i++;
+		cmds[i] = "mute"; i++;
+		cmds[i] = "play"; i++;
+		cmds[i] = "politics"; i++;
+		cmds[i] = "quiet"; i++;
+		cmds[i] = "restart"; i++;
+		cmds[i] = "save"; i++;
+		cmds[i] = "shutdown"; i++;
+		cmds[i] = "timeout"; i++;
+		cmds[i] = "watch"; i++;
+		cmds[i] = "whois"; i++;
+		cmds[i] = "wow"; i++;
+	}
+	
+	@Override
+	public boolean called(String[] args, MessageReceivedEvent e) {
+		return true;
+	}
+
+	@Override
+	public void action(String[] args, MessageReceivedEvent e) {
+		if(args.length <= 1) {
+			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested the help page.");
+//			UserHandler.sendPublicMessage("```Commands: " 
+//				+ WowBot.settings.getTrigger() + "help, " 
+//				+ WowBot.settings.getTrigger() + "wow, " 
+//				+ WowBot.settings.getTrigger() + "event, " 
+//				+ WowBot.settings.getTrigger() + "save, " 
+//				+ WowBot.settings.getTrigger() + "shutdown, " 
+//				+ WowBot.settings.getTrigger() + "info, " 
+//				+ WowBot.settings.getTrigger() + "assemble, " 
+//				+ WowBot.settings.getTrigger() + "whois, " 
+//				+ WowBot.settings.getTrigger() + "quiet, " 
+//				+ WowBot.settings.getTrigger() + "politics, "
+//				+ WowBot.settings.getTrigger() + "colour, "
+//				+ WowBot.settings.getTrigger() + "mute, "
+//				+ WowBot.settings.getTrigger() + "restart, "
+//				+ WowBot.settings.getTrigger() + "clean, "
+//				+ WowBot.settings.getTrigger() + "timeout, "
+//				+ WowBot.settings.getTrigger() + "watch"
+//				+ "```",e, true);
+			String msg = "```Commands: ";
+			for(int i = 0; i < cmds.length; i++) {
+				if(i != 0) {
+					msg = msg + ", ";
+				}
+				msg = msg + WowBot.settings.getTrigger() + cmds[i];
+			}
+			msg = msg + "```";
+			UserHandler.sendPublicMessage(msg, e, true);
+		}
+		else {
+			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested help for the" + args[1].trim() + " command.");
+			UserHandler.sendPublicMessage(b.getCommands().get(args[1]).help(), e, true);
+		}
+	}
+
+	@Override
+	public String help() {
+		return "USAGE: " + WowBot.settings.getTrigger() + "help [command]";
+	}
+
+	@Override
+	public void executed(boolean success, MessageReceivedEvent e) {
+		return;
+	}
+	
+
+}
