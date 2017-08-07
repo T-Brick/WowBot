@@ -32,7 +32,7 @@ public class Random implements Command {
 	public void action(String[] args, MessageReceivedEvent e) {
 		int num;
 		if(a == 0) {
-			num = (int) (Math.random() * Integer.parseInt(args[0].trim())) + 1;
+			num = (int) (Math.random() * Integer.parseInt(args[1].trim())) + 1;
 		}
 		else {
 			num = (int) (Math.random() * a) + 1;

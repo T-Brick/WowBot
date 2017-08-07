@@ -14,7 +14,7 @@ import net.dv8tion.jda.core.entities.Game.GameType;
 import com.estrelsteel.wowbot.command.Assemble;
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.command.Kaomoji;
-import com.estrelsteel.wowbot.command.audio.Play;
+import com.estrelsteel.wowbot.command.audio.SFX;
 import com.estrelsteel.wowbot.command.event.Event;
 import com.estrelsteel.wowbot.command.event.EventManager;
 import com.estrelsteel.wowbot.command.sys.Changelog;
@@ -41,7 +41,7 @@ import com.estrelsteel.wowbot.user.UserHandler;
 public class WowBot {
 	
 	public static Settings settings;	
-	public static final String title = "WowBot v1.5a (11)";
+	public static final String title = "WowBot v1.5b (12)";
 	public static final String owner = "167026252597690369";
 	public static final String id = "266437681242701825";
 	public static final String path = "/Users/justin/Desktop/SERVER/Discord/WowBot";
@@ -133,7 +133,9 @@ public class WowBot {
 		cmds.put("watch", new Watch(uh));
 		cmds.put("changelog", new Changelog(new GameFile(path + "/changelog.txt")));
 		cmds.put("kaomoji", new Kaomoji(new GameFile(path + "/kaomoji.txt"), uh));
-		cmds.put("play", new Play(new GameFile(path + "/sounds.txt")));
+		cmds.put("play", new SFX(new GameFile(path + "/sounds.txt"), true));
+		cmds.put("sfx", new SFX(new GameFile(path + "/sounds.txt"), false));
+		cmds.put("sound", new SFX(new GameFile(path + "/sounds.txt"), false));
 		cmds.put("team", new Team(2, 2));
 		cmds.put("die", new Random(6));
 		cmds.put("dice", new Random(6));

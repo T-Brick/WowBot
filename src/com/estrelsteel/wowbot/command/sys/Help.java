@@ -13,7 +13,7 @@ public class Help implements Command {
 	
 	public Help(WowBot b) {
 		this.b = b;
-		cmds = new String[19];
+		cmds = new String[22];
 		int i = 0;
 		cmds[i] = "assemble"; i++;
 		cmds[i] = "changelog"; i++;
@@ -24,12 +24,15 @@ public class Help implements Command {
 		cmds[i] = "info"; i++;
 		cmds[i] = "kaomoji"; i++;
 		cmds[i] = "mute"; i++;
-		cmds[i] = "play"; i++;
+		cmds[i] = "~~play~~"; i++;
 		cmds[i] = "politics"; i++;
 		cmds[i] = "quiet"; i++;
+		cmds[i] = "random"; i++;
 		cmds[i] = "restart"; i++;
 		cmds[i] = "save"; i++;
+		cmds[i] = "sfx"; i++;
 		cmds[i] = "shutdown"; i++;
+		cmds[i] = "team"; i++;
 		cmds[i] = "timeout"; i++;
 		cmds[i] = "watch"; i++;
 		cmds[i] = "whois"; i++;
