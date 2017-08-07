@@ -13,13 +13,14 @@ import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.file.GameFile;
 
-public class Play implements Command {
+public class SFX implements Command {
 	
 	private GameFile file;
 	private HashMap<String, String> songs;
 	private long time;
+	private boolean deprecated;
 	
-	public Play(GameFile file) {
+	public SFX(GameFile file, boolean deprecated) {
 		songs = new HashMap<String, String>();
 		try {
 			file.setLines(file.readFile());
@@ -33,25 +34,34 @@ public class Play implements Command {
 			e.printStackTrace();
 		}
 		this.file = file;
+		this.deprecated = deprecated;
 	}
 	
 	public GameFile getFile() {
 		return file;
 	}
 	
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+	
 	public void setFile(GameFile file) {
 		this.file = file;
 	}
 	
+	public void setDeprecated(boolean deprecated) {
+		this.deprecated = deprecated;
+	}
+	
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
+		if(deprecated) {
+			e.getTextChannel().sendMessage("The version of this command '~~play~~' has been marked **deprecated**.\n\nUse the **'sfx'** command instead.").queue();
+		}
 		if(args.length > 1) {
 			return true;
 		}
-		else {
-			e.getTextChannel().sendMessage(help()).queue();
-			return false;
-		}
+		return false;
 	}
 
 	@Override
@@ -99,7 +109,7 @@ public class Play implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "play [item | list]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "sfx [item | list]";
 	}
 
 	@Override
