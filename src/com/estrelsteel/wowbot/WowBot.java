@@ -41,15 +41,15 @@ import com.estrelsteel.wowbot.user.UserHandler;
 public class WowBot {
 	
 	public static Settings settings;	
-	public static final String title = "WowBot v1.5b (12)";
+	public static final String title = "WowBot v1.5c (13)";
 	public static final String owner = "167026252597690369";
 	public static final String id = "266437681242701825";
-	public static final String path = "/Users/justin/Desktop/SERVER/Discord/WowBot";
+	public static final String path = GameFile.getCurrentPath();
 	
 	private boolean running;
 	
 	private JDA jda;
-	private final String tolken = "MjY2NDM3NjgxMjQyNzAxODI1.C09q9A.aZMKQZqEvJH2acIYfzyp8K-eZuM";
+	private final String tolken;
 	private HashMap<String, Command> cmds;
 	private Parser p = new Parser();
 	@SuppressWarnings("unused")
@@ -66,7 +66,12 @@ public class WowBot {
 //		ttt.printGame();
 		System.out.println(title + "\n\tBy: EstrelSteel");
 		settings = new Settings();
-		new WowBot();
+		try {
+			new WowBot();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static String getMsgStart() {
@@ -77,7 +82,9 @@ public class WowBot {
 		return cmds;
 	}
 	
-	public WowBot() {
+	public WowBot() throws IOException {
+		GameFile tolkenFile = new GameFile(path + "/wowbot.txt");
+		tolken = tolkenFile.readFile().get(0).trim();
 		game = new WowGame(title, "", GameType.DEFAULT);
 		
 		try {
