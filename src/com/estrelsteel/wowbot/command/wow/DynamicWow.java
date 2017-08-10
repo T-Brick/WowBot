@@ -120,7 +120,16 @@ public class DynamicWow implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "wow [b] [i] [s] [c] [n] [p]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "wow ((<b> <i> <u>) (<s>) (<c>) <n>) (<p>)"
+				+ "\nDESC: sends wow."
+				+ "\n\t<b> : adds bold modifier."
+				+ "\n\t<i> : adds italics modifier."
+				+ "\n\t<u> : adds underscore modifier."
+				+ "\n\t<s> : adds strike-through modifier."
+				+ "\n\t<c> : adds code modifier."
+				+ "\n\t<n> : adds lowercase modifier."
+				+ "\n\t<p> : adds picture modifier."
+				+ "\nPERMS: all";
 	}
 
 	@Override

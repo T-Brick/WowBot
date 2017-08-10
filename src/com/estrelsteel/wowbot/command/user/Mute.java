@@ -35,7 +35,9 @@ public class Mute implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "mute";
+		return "USAGE: " + WowBot.settings.getTrigger() + "mute"
+				+ "\nDESC: stops wowbot from sending personal messages."
+				+ "\nPERMS: all";
 	}
 
 	@Override

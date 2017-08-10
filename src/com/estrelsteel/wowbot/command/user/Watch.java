@@ -108,7 +108,12 @@ public class Watch implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "watch [user/list/clear]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "watch [user | list | clear]"
+				+ "\nDESC: messages the sender when other users joins voice channels."
+				+ "\n\t[user] : specifies a target user."
+				+ "\n\t[list] : lists users on your watch list."
+				+ "\n\t[clear] : empties your watch list."
+				+ "\nPERMS: all";
 	}
 
 	@Override

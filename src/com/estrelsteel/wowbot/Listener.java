@@ -34,7 +34,7 @@ public class Listener extends ListenerAdapter {
 //			bot.msg.add(e.getMessage());
 		}
 		else if(e.getMessage().getContent().startsWith(WowBot.settings.getTrigger())) {
-			bot.handleCommand(bot.getParser().parse(e.getMessage().getContent().toLowerCase(), e));
+			bot.handleCommand(bot.getParser().parse(e.getMessage().getContent(), e));
 		}
 	}
 	

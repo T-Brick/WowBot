@@ -56,7 +56,10 @@ public class Quiet implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "quiet [time]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "quiet <time>"
+				+ "\nDESC: stops the user from being messaged in assemble command."
+				+ "\n\t<time> : for <time> milliseconds."
+				+ "\nPERMS: all";
 	}
 
 	@Override

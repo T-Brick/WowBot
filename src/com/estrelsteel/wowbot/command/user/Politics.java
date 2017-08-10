@@ -68,7 +68,9 @@ public class Politics implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "politics";
+		return "USAGE: " + WowBot.settings.getTrigger() + "politics"
+				+ "\nDESC: joins/leaves a political text channel."
+				+ "\nPERMS: all";
 	}
 
 	@Override

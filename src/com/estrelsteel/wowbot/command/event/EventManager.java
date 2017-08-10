@@ -125,13 +125,17 @@ public class EventManager implements Command {
 	 * 
 	 */
 
+	// event [list | (add/+ [name] [description] [year] [month] [day] <[hour] [min] [sec]>) | (remove/- [name]) | clean]
+	
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "event list\n"
-				+ "\t" + WowBot.settings.getTrigger() + "event [add/+] [name] [description] [year] [month] [day] ([hour] [min] [sec])\n"
-				+ "\t" + WowBot.settings.getTrigger() + "event [remove/-] [name]\n"
-				+ "\t" + WowBot.settings.getTrigger() + "event clean\n"
-				+ "\t" + WowBot.settings.getTrigger() + "event help\n";
+		return "USAGE: " + WowBot.settings.getTrigger() + "event [list | (add/+ [name] [description] [year] [month] [day] <[hour] [min] [sec]>) | (remove/- [name]) | clean]"
+				+ "\nDESC: lists, creates, and removes events."
+				+ "\n\t[list] : lists the events."
+				+ "\n\t[add/+  [name] [description] [year] [month] [day] <[hour] [min] [sec]>] : adds an event with [name] and [description] on [day].[month].[year] at <[hour]:[min]:[sec]>."
+				+ "\n\t[remove/-  [name]] : removes event with [name]"
+				+ "\n\t[clean] : removes all events that are in the past."
+				+ "\nPERMS: all";
 	}
 
 	@Override

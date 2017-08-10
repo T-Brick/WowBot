@@ -13,7 +13,7 @@ public class Help implements Command {
 	
 	public Help(WowBot b) {
 		this.b = b;
-		cmds = new String[22];
+		cmds = new String[27];
 		int i = 0;
 		cmds[i] = "assemble"; i++;
 		cmds[i] = "changelog"; i++;
@@ -24,16 +24,21 @@ public class Help implements Command {
 		cmds[i] = "info"; i++;
 		cmds[i] = "kaomoji"; i++;
 		cmds[i] = "mute"; i++;
-		cmds[i] = "~~play~~"; i++;
+		cmds[i] = "pause"; i++;
+		cmds[i] = "play"; i++;
 		cmds[i] = "politics"; i++;
+		cmds[i] = "queue"; i++;
 		cmds[i] = "quiet"; i++;
 		cmds[i] = "random"; i++;
 		cmds[i] = "restart"; i++;
 		cmds[i] = "save"; i++;
 		cmds[i] = "sfx"; i++;
 		cmds[i] = "shutdown"; i++;
+		cmds[i] = "skip"; i++;
+		cmds[i] = "summon"; i++;
 		cmds[i] = "team"; i++;
 		cmds[i] = "timeout"; i++;
+		cmds[i] = "volume"; i++;
 		cmds[i] = "watch"; i++;
 		cmds[i] = "whois"; i++;
 		cmds[i] = "wow"; i++;
@@ -84,7 +89,10 @@ public class Help implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "help [command]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "help <command>"
+				+ "\nDESC: gives the player a list of commands."
+				+ "\n\t<command> : gives the user info about <command>."
+				+ "\nPERMS: all";
 	}
 
 	@Override

@@ -88,7 +88,10 @@ public class WhoIs implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "whois [user]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "whois [user]"
+				+ "\nDESC: gets user info."
+				+ "\n\t{NULL} : gets info about [user]."
+				+ "\nPERMS: all";
 	}
 
 	@Override

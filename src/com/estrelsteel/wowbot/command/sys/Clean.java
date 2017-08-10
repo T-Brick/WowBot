@@ -56,7 +56,10 @@ public class Clean implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "clean [cmds (true | false)]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "clean <cmds>"
+				+ "\nDESC: deletes messages from WowBot."
+				+ "\n\t<cmds> : boolean, should it delete user command messages."
+				+ "\nPERMS: all";
 	}
 
 	@Override

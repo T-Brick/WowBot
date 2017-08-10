@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.managers.AudioManager;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
@@ -17,10 +15,10 @@ public class SFX implements Command {
 	
 	private GameFile file;
 	private HashMap<String, String> songs;
-	private long time;
 	private boolean deprecated;
+	private WowAudioCore wac;
 	
-	public SFX(GameFile file, boolean deprecated) {
+	public SFX(GameFile file, WowAudioCore core, boolean deprecated) {
 		songs = new HashMap<String, String>();
 		try {
 			file.setLines(file.readFile());
@@ -35,6 +33,7 @@ public class SFX implements Command {
 		}
 		this.file = file;
 		this.deprecated = deprecated;
+		this.wac = core;
 	}
 	
 	public GameFile getFile() {
@@ -77,23 +76,12 @@ public class SFX implements Command {
 			e.getTextChannel().sendMessage(help()).queue();
 		}
 		else {
-			VoiceChannel c = determineChannel(e);
+			VoiceChannel c = VoiceHelp.determineChannel(e);
 			if(c != null) {
 				String song = songs.get(args[1].trim());
-				TextChannel t = findHiddenChannel(e);
 				System.out.println(WowBot.getMsgStart() + e.getAuthor().getName() + " attempted to play " + args[1].trim() + " in " + c.getName() + ".");
 				if(song != null) {
-					AudioManager am = e.getGuild().getAudioManager();
-					am.openAudioConnection(c);
-					time = System.currentTimeMillis();
-					while(System.currentTimeMillis() - time < 1000) {}
-					t.sendMessage("!play " + song).queue();
-					time = System.currentTimeMillis();
-					while(System.currentTimeMillis() - time < 500) {}
-					am.closeAudioConnection();
-					VoiceChannel h = determineHidden(e);
-					am.openAudioConnection(h);
-					am = null;
+					wac.loadTrack(song, wac.switchVoiceChannel(c, false), e, true);
 				}
 				else {
 					e.getTextChannel().sendMessage("No such sound exists.").queue();
@@ -109,42 +97,15 @@ public class SFX implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "sfx [item | list]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "sfx [item | list]"
+				+ "\nDESC: plays a sound effect."
+				+ "\n\t[item] : plays the audio file with the name [item]."
+				+ "\n\t[list] : sends the user a list of all the sound effects avaliable."
+				+ "\nPERMS: all";
 	}
 
 	@Override
 	public void executed(boolean success, MessageReceivedEvent e) {
 		return;
 	}
-	
-	public TextChannel findHiddenChannel(MessageReceivedEvent e) {
-		for(int i = 0; i < e.getGuild().getTextChannels().size(); i++) {
-			if(e.getGuild().getTextChannels().get(i).getName().equalsIgnoreCase("admin") || e.getGuild().getTextChannels().get(i).getName().equalsIgnoreCase("bots")) {
-				return e.getGuild().getTextChannels().get(i);
-			}
-		}
-		return e.getTextChannel();
-	}
-	
-	public VoiceChannel determineChannel(MessageReceivedEvent e) {
-		for(int i = 0; i < e.getGuild().getVoiceChannels().size(); i++) {
-			for(int j = 0; j < e.getGuild().getVoiceChannels().get(i).getMembers().size(); j++) {
-				if(e.getGuild().getVoiceChannels().get(i).getMembers().get(j).getUser().getName().equals(e.getAuthor().getName())) {
-					return e.getGuild().getVoiceChannels().get(i);
-				}
-			}
-		}
-		return null;
-	}
-	
-	public VoiceChannel determineHidden(MessageReceivedEvent e) {
-		for(int i = 0; i < e.getGuild().getVoiceChannels().size(); i++) {
-			if(e.getGuild().getVoiceChannels().get(i).getName().equalsIgnoreCase("Bots")) {
-				return e.getGuild().getVoiceChannels().get(i);
-			}
-		}
-		return e.getGuild().getAfkChannel();
-	}
-	
-
 }

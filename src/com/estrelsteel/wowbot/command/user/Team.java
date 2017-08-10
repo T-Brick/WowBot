@@ -125,7 +125,12 @@ public class Team implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "team [number | lock]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "team [number | lock | alock]"
+				+ "\nDESC: manages teams."
+				+ "\n\t[number] : joins team [number]."
+				+ "\n\t[lock] : votes to lock in the teams."
+				+ "\n\t[alock] : force locks the teams."
+				+ "\nPERMS: all, admin";
 	}
 
 	@Override

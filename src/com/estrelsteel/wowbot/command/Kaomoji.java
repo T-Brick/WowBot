@@ -121,7 +121,11 @@ public class Kaomoji implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "kaomoji <name | &all&>";
+		return "USAGE: " + WowBot.settings.getTrigger() + "kaomoji [name | &all&]"
+				+ "\nDESC: sends a kaomoji from a list."
+				+ "\n\t[name] : replies with the specified kaomoji."
+				+ "\n\t[&all&] : sends the user a list of all the kaomoji avaliable."
+				+ "\nPERMS: all";
 	}
 
 	@Override

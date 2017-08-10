@@ -47,7 +47,12 @@ public class Colour implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "color [red] [green] [blue]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "color [red] [green] [blue]"
+				+ "\nDESC: sets the user's colour."
+				+ "\n\t[red] : sets the amount of red, between 0 and 255."
+				+ "\n\t[green] : sets the amount of green, between 0 and 255."
+				+ "\n\t[blue] : sets the amount of blue, between 0 and 255."
+				+ "\nPERMS: all";
 	}
 
 	@Override

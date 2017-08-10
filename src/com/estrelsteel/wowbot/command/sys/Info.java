@@ -27,7 +27,9 @@ public class Info implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "info";
+		return "USAGE: " + WowBot.settings.getTrigger() + "info"
+				+ "\nDESC: sends info about WowBot."
+				+ "\nPERMS: all";
 	}
 
 	@Override

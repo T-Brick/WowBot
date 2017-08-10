@@ -1,4 +1,4 @@
-package com.estrelsteel.wowbot.command;
+package com.estrelsteel.wowbot.command.user;
 
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Member;
@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
+import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.user.UserHandler;
 import com.estrelsteel.wowbot.user.UserSettings;
 
@@ -77,7 +78,10 @@ public class Assemble implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "assemble [group]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "assemble [group]"
+				+ "\nDESC: gathers a group."
+				+ "\n\t[group] : messages everyone in [group] who is offline."
+				+ "\nPERMS: all";
 	}
 
 	@Override
