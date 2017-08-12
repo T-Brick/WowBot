@@ -10,15 +10,17 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.file.GameFile;
+import com.estrelsteel.wowbot.user.UserHandler;
+import com.estrelsteel.wowbot.user.UserSettings;
 
 public class SFX implements Command {
 	
 	private GameFile file;
 	private HashMap<String, String> songs;
-	private boolean deprecated;
+	private UserHandler uh;
 	private WowAudioCore wac;
 	
-	public SFX(GameFile file, WowAudioCore core, boolean deprecated) {
+	public SFX(GameFile file, WowAudioCore core, UserHandler uh) {
 		songs = new HashMap<String, String>();
 		try {
 			file.setLines(file.readFile());
@@ -32,33 +34,28 @@ public class SFX implements Command {
 			e.printStackTrace();
 		}
 		this.file = file;
-		this.deprecated = deprecated;
 		this.wac = core;
+		this.uh = uh;
 	}
 	
 	public GameFile getFile() {
 		return file;
 	}
 	
-	public boolean isDeprecated() {
-		return deprecated;
-	}
-	
 	public void setFile(GameFile file) {
 		this.file = file;
 	}
 	
-	public void setDeprecated(boolean deprecated) {
-		this.deprecated = deprecated;
-	}
-	
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
-		if(deprecated) {
-			e.getTextChannel().sendMessage("The version of this command '~~play~~' has been marked **deprecated**.\n\nUse the **'sfx'** command instead.").queue();
-		}
 		if(args.length > 1) {
-			return true;
+			UserSettings us = uh.findUser(e.getAuthor().getIdLong());
+			if(us != null && us.getMusicRules()[1]) {
+				return true;
+			}
+			else {
+				e.getTextChannel().sendMessage("You do not have the permissions to do this.").queue();
+			}
 		}
 		return false;
 	}

@@ -13,13 +13,13 @@ public class Team implements Command {
 	
 	private final int maxTeams;
 	private boolean lock;
-	private ArrayList<String> vote_lock;
+	private ArrayList<Long> vote_lock;
 	private int minLock;
 	
 	public Team(int maxTeams, int minLock) {
 		this.maxTeams = maxTeams;
 		this.lock = false;
-		this.vote_lock = new ArrayList<String>();
+		this.vote_lock = new ArrayList<Long>();
 		this.minLock = minLock;
 	}
 	
@@ -36,14 +36,16 @@ public class Team implements Command {
 		if(args[1].trim().equalsIgnoreCase("lock")) {
 			boolean found = false;
 			for(int i = 0; i < vote_lock.size(); i++) {
-				if(vote_lock.get(i).equalsIgnoreCase(e.getAuthor().getId())) {
+				if(vote_lock.get(i) == e.getAuthor().getIdLong()) {
 					found = true;
+					vote_lock.remove(i);
 					break;
 				}
 			}
 			if(!found) {
 				e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " has voted to lock the teams.").queue();
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has voted to lock the teams.");
+				vote_lock.add(e.getAuthor().getIdLong());
 				if(vote_lock.size() >= minLock && !lock) {
 					e.getTextChannel().sendMessage("The teams are now locked in.").queue();
 					System.out.println(WowBot.getMsgStart() + "The teams are now locked in.");
@@ -60,7 +62,7 @@ public class Team implements Command {
 				}
 			}
 		}
-		else if(args[1].trim().equalsIgnoreCase("alock") && e.getAuthor().getId().equals(e.getGuild().getOwner().getUser().getId())) {
+		else if(args[1].trim().equalsIgnoreCase("alock") && e.getAuthor().getIdLong() == e.getGuild().getOwner().getUser().getIdLong()) {
 			lock = !lock;
 			if(lock) {
 				e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " has made the teams locked.").queue();
@@ -71,7 +73,7 @@ public class Team implements Command {
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has made the teams unlocked.");
 			}
 		}
-		else if((args[1].trim().equalsIgnoreCase("clean") || args[1].trim().equalsIgnoreCase("clear")) && e.getAuthor().getId().equals(e.getGuild().getOwner().getUser().getId())) {
+		else if((args[1].trim().equalsIgnoreCase("clean") || args[1].trim().equalsIgnoreCase("clear")) && e.getAuthor().getIdLong() == e.getGuild().getOwner().getUser().getIdLong()) {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has cleaned the teams.");
 			for(int i = 0; i < e.getGuild().getMembers().size(); i++) {
 				for(int j = 0; j < e.getGuild().getMembers().get(i).getRoles().size(); j++) {
@@ -85,7 +87,7 @@ public class Team implements Command {
 					e.getGuild().getController().moveVoiceMember(e.getGuild().getMembers().get(i), e.getGuild().getAfkChannel());
 				}
 			}
-			vote_lock = new ArrayList<String>();
+			vote_lock = new ArrayList<Long>();
 			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " the teams have been cleaned.").queue();
 			lock = false;
 		}

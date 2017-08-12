@@ -22,7 +22,7 @@ public class Quiet implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		UserSettings u = uh.findUser(e.getAuthor().getId());
+		UserSettings u = uh.findUser(e.getAuthor().getIdLong());
 		u.setQuiet(!u.isQuiet());
 		if(args.length > 1) {
 			if(u.isQuiet()) {

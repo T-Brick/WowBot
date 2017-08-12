@@ -5,18 +5,29 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.user.UserHandler;
+import com.estrelsteel.wowbot.user.UserSettings;
 
 public class Summon implements Command {
 	
 	private WowAudioCore wac;
+	private UserHandler uh;
 	
-	public Summon(WowAudioCore wac) {
+	public Summon(WowAudioCore wac, UserHandler uh) {
 		this.wac = wac;
+		this.uh = uh;
 	}
 	
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
-		return true;
+		UserSettings us = uh.findUser(e.getAuthor().getIdLong());
+		if(us != null && us.getMusicRules()[4]) {
+			return true;
+		}
+		else {
+			e.getTextChannel().sendMessage("You do not have the permissions to do this.").queue();
+		}
+		return false;
 	}
 
 	@Override

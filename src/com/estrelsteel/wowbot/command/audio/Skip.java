@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.user.UserHandler;
+import com.estrelsteel.wowbot.user.UserSettings;
 
 public class Skip implements Command {
 	
@@ -14,24 +16,33 @@ public class Skip implements Command {
 	private String vid;
 	private ArrayList<Long> votes;
 	private double percent;
+	private UserHandler uh;
 	
-	public Skip(WowAudioCore wac, double percent) {
+	public Skip(WowAudioCore wac, double percent, UserHandler uh) {
 		this.wac = wac;
 		vid = "";
 		votes = new ArrayList<Long>();
+		this.uh = uh;
 	}
 	
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
-		return true;
+		UserSettings us = uh.findUser(e.getAuthor().getIdLong());
+		if(us != null && us.getMusicRules()[2]) {
+			return true;
+		}
+		else {
+			e.getTextChannel().sendMessage("You do not have the permissions to do this.").queue();
+		}
+		return false;
 	}
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
 		VoiceChannel c = VoiceHelp.determineChannel(e);
-		if(c == null  || c.getIdLong() == wac.getVoiceChannel().getIdLong()) {
-			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " attempted to skip will not being in the voice channel.");
-			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " you need to be in the voice channel.").queue();
+		if(c == null  || c.getIdLong() != wac.getVoiceChannel().getIdLong()) {
+			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " attempted to skip but their not in the voice channel.");
+			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " you need to be in the voice channel to skip.").queue();
 		}
 		else {
 			if(e.getMember().isOwner()) {

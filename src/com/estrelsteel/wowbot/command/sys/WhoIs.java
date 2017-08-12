@@ -69,11 +69,12 @@ public class WhoIs implements Command {
 				}
 			}
 			if(!u_msg.equalsIgnoreCase("")) {
-				u = uh.findUser(m.getUser().getId());
+				u = uh.findUser(m.getUser().getIdLong());
 				u_msg = u_msg + "\n\t" + "quiet: " + u.isQuiet();
 				u_msg = u_msg + "\n\t" + "quiet_start: " + u.getQuietStart();
 				u_msg = u_msg + "\n\t" + "quiet_length: " + u.getQuietLength();
 				u_msg = u_msg + "\n\t" + "mute: " + u.isMute();
+				u_msg = u_msg + "\n\t" + "audio: " + u.getMusicRules().toString();
 				msg = msg + u_msg;
 				msg = msg + "";
 				u_msg = "";

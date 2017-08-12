@@ -13,9 +13,10 @@ public class Help implements Command {
 	
 	public Help(WowBot b) {
 		this.b = b;
-		cmds = new String[27];
+		cmds = new String[28];
 		int i = 0;
 		cmds[i] = "assemble"; i++;
+		cmds[i] = "audioperms"; i++;
 		cmds[i] = "changelog"; i++;
 		cmds[i] = "clean"; i++;
 		cmds[i] = "colour"; i++;

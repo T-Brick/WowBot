@@ -23,7 +23,7 @@ public class UserHandler {
 		GameFile gf = new GameFile(path);
 		gf.setLines(gf.readFile());
 		for(int i = 0; i < gf.getLines().size(); i++) {
-			users.add(new UserSettings("NULL").loadUserSettings(gf.getLines().get(i)));
+			users.add(new UserSettings(-1).loadUserSettings(gf.getLines().get(i)));
 		}
 		return this;
 	}
@@ -36,13 +36,13 @@ public class UserHandler {
 		gf.saveFile();
 	}
 	
-	public UserSettings findUser(String id) {
+	public UserSettings findUser(long id) {
 		for(int i = 0; i < users.size(); i++) {
-			if(users.get(i).getID().equals("NULL")) {
+			if(users.get(i).getID() == -1) {
 				users.remove(i);
 				i--;
 			}
-			else if(users.get(i).getID().equals(id)) {
+			else if(users.get(i).getID() == id) {
 				return users.get(i);
 			}
 		}

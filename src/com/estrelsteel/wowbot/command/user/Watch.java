@@ -28,7 +28,7 @@ public class Watch implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		UserSettings u = uh.findUser(e.getAuthor().getId());
+		UserSettings u = uh.findUser(e.getAuthor().getIdLong());
 		String s = "";
 		for(int i = 1; i < args.length; i++) {
 			s = s + args[i] + " ";
@@ -78,14 +78,14 @@ public class Watch implements Command {
 			}
 			
 			if(t != null) {
-				if(t.getUser().equals(e.getAuthor())) {
+				if(t.getUser().getIdLong() == e.getAuthor().getIdLong()) {
 					u.sendPrivateMessage(e.getAuthor(), "You cannot watch yourself.", true);
 					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " attempt to watch themself.");
 				}
 				else {
 					boolean found = false;
 					for(User user : u.getWatching()) {
-						if(t.getAsMention().equalsIgnoreCase(user.getAsMention())) {
+						if(t.getUser().getIdLong() == user.getIdLong()) {
 							found = true;
 							break;
 						}

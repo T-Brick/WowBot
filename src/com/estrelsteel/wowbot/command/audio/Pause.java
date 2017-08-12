@@ -4,20 +4,31 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.user.UserHandler;
+import com.estrelsteel.wowbot.user.UserSettings;
 
 public class Pause implements Command {
 	
 	private WowAudioCore wac;
 	private boolean toggle;
+	private UserHandler uh;
 	
-	public Pause(WowAudioCore wac, boolean toggle) {
+	public Pause(WowAudioCore wac, boolean toggle, UserHandler uh) {
 		this.wac = wac;
 		this.toggle = toggle;
+		this.uh = uh;
 	}
 	
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
-		return true;
+		UserSettings us = uh.findUser(e.getAuthor().getIdLong());
+		if(us != null && us.getMusicRules()[3]) {
+			return true;
+		}
+		else {
+			e.getTextChannel().sendMessage("You do not have the permissions to do this.").queue();
+		}
+		return false;
 	}
 
 	@Override

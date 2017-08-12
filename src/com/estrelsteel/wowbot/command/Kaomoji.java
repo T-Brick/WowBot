@@ -65,8 +65,8 @@ public class Kaomoji implements Command {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested all kaomoji.");
 			msg = WowBot.convertListToString(all);
 			System.out.println(msg.length());
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(0, 1801) + "```", false);
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(1801) + "```", false);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(0, 1801) + "```", false);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(1801) + "```", false);
 			return;
 		}
 		for(i++; i < args.length; i++) {

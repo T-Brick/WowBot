@@ -42,7 +42,7 @@ public class Listener extends ListenerAdapter {
 		if(uh != null) {
 			for(int i = 0; i < uh.getUsers().size(); i++) {
 				for(int j = 0; j < uh.getUsers().get(i).getWatching().size(); j++) {
-					if(uh.getUsers().get(i).getWatching().get(j).equals(e.getMember().getUser())) {
+					if(uh.getUsers().get(i).getWatching().get(j).getIdLong() == e.getMember().getUser().getIdLong()) {
 						uh.getUsers().get(i).sendPrivateMessage(e.getGuild().getMemberById(uh.getUsers().get(i).getID()).getUser(), 
 								e.getMember().getEffectiveName() + " has joined the '" + e.getChannelJoined().getName()
 								+ "' voice channel in the '" + e.getGuild().getName() + "' guild.", true);
@@ -67,23 +67,23 @@ public class Listener extends ListenerAdapter {
 	
 	public void onGuildMemberNickChange(GuildMemberNickChangeEvent e) {
 		if(e.getNewNick() != null && e.getPrevNick() != null) {
-			e.getGuild().getTextChannels().get(0).sendMessage(e.getMember().getAsMention() + " has changed their nickname from " + e.getPrevNick() + " to " + e.getNewNick()).queue();
-			System.out.println(WowBot.getMsgStart() + "" + e.getMember().getAsMention() + " has changed their nickname from " + e.getPrevNick() + " to " + e.getNewNick());
+			e.getGuild().getTextChannels().get(0).sendMessage(e.getUser().getAsMention() + " has changed their nickname from " + e.getPrevNick() + " to " + e.getNewNick()).queue();
+			System.out.println(WowBot.getMsgStart() + "" + e.getUser().getAsMention() + " has changed their nickname from " + e.getPrevNick() + " to " + e.getNewNick());
 		}
 		else if(e.getNewNick() != null && e.getPrevNick() == null) {
-			e.getGuild().getTextChannels().get(0).sendMessage(e.getMember().getAsMention() + " has made " + e.getNewNick() + " their nickname.").queue();
-			System.out.println(WowBot.getMsgStart() + "" + e.getMember().getAsMention() + " has made " + e.getNewNick() + " their nickname.");
+			e.getGuild().getTextChannels().get(0).sendMessage(e.getUser().getAsMention() + " has made " + e.getNewNick() + " their nickname.").queue();
+			System.out.println(WowBot.getMsgStart() + "" + e.getUser().getAsMention() + " has made " + e.getNewNick() + " their nickname.");
 		}
 		else if(e.getNewNick() == null && e.getPrevNick() != null) {
-			e.getGuild().getTextChannels().get(0).sendMessage(e.getMember().getAsMention() + " has removed their nickname, " + e.getPrevNick()+ ".").queue();
-			System.out.println(WowBot.getMsgStart() + "" + e.getMember().getAsMention() + " has removed their nickname, " + e.getPrevNick() + ".");
+			e.getGuild().getTextChannels().get(0).sendMessage(e.getUser().getAsMention() + " has removed their nickname, " + e.getPrevNick()+ ".").queue();
+			System.out.println(WowBot.getMsgStart() + "" + e.getUser().getAsMention() + " has removed their nickname, " + e.getPrevNick() + ".");
 		}
 	}
 	
 	public void onGuildMemberJoin(GuildMemberJoinEvent e) {
 		if(!e.getUser().isBot()) {
 			try {
-				GameFile file = new GameFile(WowBot.path + "/users_left/" + e.getUser().getId() + ".txt");
+				GameFile file = new GameFile(WowBot.path + "/users_left/" + e.getGuild().getIdLong() + " " + e.getUser().getIdLong() + ".txt");
 				file.setLines(file.readFile());
 				if(e.getUser().getId().equals(file.getLines().get(0).trim())) {
 					e.getGuild().getTextChannels().get(0).sendMessage(e.getMember().getAsMention() + " has re-joined the server.").queue();
@@ -104,7 +104,7 @@ public class Listener extends ListenerAdapter {
 	
 	public void onGuildMemberLeave(GuildMemberJoinEvent e) {
 		if(!e.getUser().isBot()) {
-			GameFile file = new GameFile(WowBot.path + "/users_left/" + e.getUser().getId() + ".txt");
+			GameFile file = new GameFile(WowBot.path + "/users_left/" + e.getGuild().getIdLong() + " " + e.getUser().getIdLong() + ".txt");
 			ArrayList<String> lines = new ArrayList<String>();
 			System.out.println(WowBot.getMsgStart() + "" + e.getMember().getAsMention() + " left the server. Backing up their data..");
 			lines.add(e.getUser().getId());

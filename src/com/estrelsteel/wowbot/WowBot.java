@@ -13,6 +13,7 @@ import net.dv8tion.jda.core.entities.Game.GameType;
 
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.command.Kaomoji;
+import com.estrelsteel.wowbot.command.audio.AudioPerms;
 import com.estrelsteel.wowbot.command.audio.Pause;
 import com.estrelsteel.wowbot.command.audio.Play;
 import com.estrelsteel.wowbot.command.audio.Queue;
@@ -47,24 +48,16 @@ import com.estrelsteel.wowbot.user.UserHandler;
 
 public class WowBot {
 	
-	public static Settings settings;	
-<<<<<<< HEAD
-	public static final String title = "WowBot v1.6a (13)";
-=======
-	public static final String title = "WowBot v1.5c (13)";
->>>>>>> master
-	public static final String owner = "167026252597690369";
-	public static final String id = "266437681242701825";
-	public static final String path = GameFile.getCurrentPath();
+	public static Settings settings;
+	public static final String title = "WowBot v1.6a (14)";
+	public static String owner;
+	public static String id;
+	public static String path = GameFile.getCurrentPath();
 	
 	private boolean running;
 	
 	private JDA jda;
-<<<<<<< HEAD
-	private final String tolken = "MjY2NDM3NjgxMjQyNzAxODI1.DGqHEw.SIWEfUbFNNJTl_BV8QaCEnr2NWw";
-=======
 	private final String tolken;
->>>>>>> master
 	private HashMap<String, Command> cmds;
 	private Parser p = new Parser();
 	@SuppressWarnings("unused")
@@ -82,6 +75,9 @@ public class WowBot {
 //		ttt.printGame();
 		System.out.println(title + "\n\tBy: EstrelSteel");
 		settings = new Settings();
+		if(args.length > 0) {
+			path = args[0];
+		}
 		try {
 			new WowBot();
 		} 
@@ -99,8 +95,11 @@ public class WowBot {
 	}
 	
 	public WowBot() throws IOException {
-		GameFile tolkenFile = new GameFile(path + "/wowbot.txt");
-		tolken = tolkenFile.readFile().get(0).trim();
+		GameFile info = new GameFile(path + "/wowbot.txt");
+		info.setLines(info.readFile());
+		tolken = info.getLines().get(0).trim();
+		id = info.getLines().get(1).trim();
+		owner = info.getLines().get(2).trim();
 		game = new WowGame(title, "", GameType.DEFAULT);
 		
 		try {
@@ -157,16 +156,17 @@ public class WowBot {
 		cmds.put("watch", new Watch(uh));
 		cmds.put("changelog", new Changelog(new GameFile(path + "/changelog.txt")));
 		cmds.put("kaomoji", new Kaomoji(new GameFile(path + "/kaomoji.txt"), uh));
-		cmds.put("sfx", new SFX(new GameFile(path + "/sounds.txt"), wac, false));
-		cmds.put("sound", new SFX(new GameFile(path + "/sounds.txt"), wac, false));
-		cmds.put("play", new Play(wac));
-		cmds.put("pause", new Pause(wac, true));
-		cmds.put("resume", new Pause(wac, false));
-		cmds.put("skip", new Skip(wac, 0.5));
+		cmds.put("sfx", new SFX(new GameFile(path + "/sounds.txt"), wac, uh));
+		cmds.put("sound", new SFX(new GameFile(path + "/sounds.txt"), wac, uh));
+		cmds.put("play", new Play(wac, new GameFile(path + "/audio-whitelist.txt"), uh));
+		cmds.put("pause", new Pause(wac, true, uh));
+		cmds.put("resume", new Pause(wac, false, uh));
+		cmds.put("skip", new Skip(wac, 0.5, uh));
 		cmds.put("queue", new Queue(wac));
-		cmds.put("summon", new Summon(wac));
-		cmds.put("volume", new Volume(wac));
-		cmds.put("vol", new Volume(wac));
+		cmds.put("summon", new Summon(wac, uh));
+		cmds.put("volume", new Volume(wac, uh));
+		cmds.put("vol", new Volume(wac, uh));
+		cmds.put("audioperms", new AudioPerms(uh));
 		cmds.put("team", new Team(2, 2));
 		cmds.put("die", new Random(6));
 		cmds.put("dice", new Random(6));
@@ -295,6 +295,7 @@ public class WowBot {
 					
 				}
 				else {
+					cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help());
 					cmds.get(cmd.args[0]).executed(safe, cmd.e);
 				}
 			}

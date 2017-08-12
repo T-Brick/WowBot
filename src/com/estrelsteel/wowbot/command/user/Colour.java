@@ -37,7 +37,7 @@ public class Colour implements Command {
 				+ c.getBlue() + " (RGB).");
 		}
 		e.getMember().getRoles().get(0).getManager().setColor(c).reason("User requested the change.").queue();
-		uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "You changed your colour!", false);
+		uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "You changed your colour!", false);
 //		if(!e.getAuthor().hasPrivateChannel()) {
 //			e.getAuthor().openPrivateChannel().queue();
 //		}

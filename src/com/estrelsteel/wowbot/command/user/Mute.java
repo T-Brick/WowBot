@@ -21,15 +21,15 @@ public class Mute implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		boolean mute = !uh.findUser(e.getAuthor().getId()).isMute();
-		uh.findUser(e.getAuthor().getId()).setMute(mute);
+		boolean mute = !uh.findUser(e.getAuthor().getIdLong()).isMute();
+		uh.findUser(e.getAuthor().getIdLong()).setMute(mute);
 		if(mute) {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has now muted WowBot.");
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "You have now muted WowBot.", true);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "You have now muted WowBot.", true);
 		}
 		else {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has now unmuted WowBot.");
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "You have now unmuted WowBot.", true);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "You have now unmuted WowBot.", true);
 		}
 	}
 

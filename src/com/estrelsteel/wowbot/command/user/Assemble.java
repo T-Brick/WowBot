@@ -50,7 +50,7 @@ public class Assemble implements Command {
 				UserSettings u = null;
 				for(Member m : e.getGuild().getMembers()) {
 					if(m.getOnlineStatus() != OnlineStatus.ONLINE) {
-						u = uh.findUser(m.getUser().getId());
+						u = uh.findUser(m.getUser().getIdLong());
 						if(!u.isQuiet()) {
 							for(Role ro : m.getRoles()) {
 								if(ro.equals(e.getGuild().getRoles().get(r))) {
