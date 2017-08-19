@@ -1,4 +1,4 @@
-package com.estrelsteel.wowbot.command.sys;
+package com.estrelsteel.wowbot.command.sys.admin;
 
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +84,10 @@ public class TimeOut implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "timeout [user]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "timeout [user]"
+				+ "\nDESC: manages timeout."
+				+ "\n\t[NULL] : puts [user] in timeout."
+				+ "\nPERMS: admin";
 	}
 
 	@Override

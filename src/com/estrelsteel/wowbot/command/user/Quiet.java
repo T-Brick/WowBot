@@ -22,7 +22,7 @@ public class Quiet implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		UserSettings u = uh.findUser(e.getAuthor().getId());
+		UserSettings u = uh.findUser(e.getAuthor().getIdLong());
 		u.setQuiet(!u.isQuiet());
 		if(args.length > 1) {
 			if(u.isQuiet()) {
@@ -56,7 +56,10 @@ public class Quiet implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "quiet [time]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "quiet <time>"
+				+ "\nDESC: stops the user from being messaged in assemble command."
+				+ "\n\t<time> : for <time> milliseconds."
+				+ "\nPERMS: all";
 	}
 
 	@Override

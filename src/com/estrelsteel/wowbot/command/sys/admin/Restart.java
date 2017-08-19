@@ -1,4 +1,4 @@
-package com.estrelsteel.wowbot.command.sys;
+package com.estrelsteel.wowbot.command.sys.admin;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -31,7 +31,9 @@ public class Restart implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "restart";
+		return "USAGE: " + WowBot.settings.getTrigger() + "restart"
+				+ "\nDESC: restarts wowbot."
+				+ "\nPERMS: owner";
 	}
 
 	@Override

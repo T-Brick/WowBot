@@ -7,7 +7,10 @@ public class Parser {
 		raw = raw.substring(WowBot.settings.getTrigger().length());
 		String[] args = raw.split(" ");
 		for(int i = 0; i < args.length; i++) {
-			args[i] = args[i].trim().toLowerCase();
+			args[i] = args[i].trim();
+		}
+		if(args.length >= 1) {
+			args[0].toLowerCase();
 		}
 		return new CommandContainer(args, e, raw);
 	}

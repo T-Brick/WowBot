@@ -1,4 +1,4 @@
-package com.estrelsteel.wowbot.command.sys;
+package com.estrelsteel.wowbot.command.sys.admin;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -32,7 +32,9 @@ public class ShutDown implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "shutdown";
+		return "USAGE: " + WowBot.settings.getTrigger() + "shutdown"
+				+ "\nDESC: shutsdown wowbot."
+				+ "\nPERMS: owner";
 	}
 
 	@Override

@@ -53,7 +53,10 @@ public class Random implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "random [sides]";
+		return "USAGE: " + WowBot.settings.getTrigger() + "random [sides]"
+				+ "\nDESC: generates a random number."
+				+ "\n\t[sides] : rolls a die with [sides]."
+				+ "\nPERMS: all";
 	}
 
 	@Override

@@ -11,10 +11,17 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game.GameType;
 
-import com.estrelsteel.wowbot.command.Assemble;
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.command.Kaomoji;
+import com.estrelsteel.wowbot.command.audio.AudioPerms;
+import com.estrelsteel.wowbot.command.audio.Pause;
+import com.estrelsteel.wowbot.command.audio.Play;
+import com.estrelsteel.wowbot.command.audio.Queue;
 import com.estrelsteel.wowbot.command.audio.SFX;
+import com.estrelsteel.wowbot.command.audio.Skip;
+import com.estrelsteel.wowbot.command.audio.Summon;
+import com.estrelsteel.wowbot.command.audio.Volume;
+import com.estrelsteel.wowbot.command.audio.WowAudioCore;
 import com.estrelsteel.wowbot.command.event.Event;
 import com.estrelsteel.wowbot.command.event.EventManager;
 import com.estrelsteel.wowbot.command.sys.Changelog;
@@ -22,11 +29,12 @@ import com.estrelsteel.wowbot.command.sys.Clean;
 import com.estrelsteel.wowbot.command.sys.Help;
 import com.estrelsteel.wowbot.command.sys.Info;
 import com.estrelsteel.wowbot.command.sys.Random;
-import com.estrelsteel.wowbot.command.sys.Restart;
 import com.estrelsteel.wowbot.command.sys.Save;
-import com.estrelsteel.wowbot.command.sys.ShutDown;
-import com.estrelsteel.wowbot.command.sys.TimeOut;
 import com.estrelsteel.wowbot.command.sys.WhoIs;
+import com.estrelsteel.wowbot.command.sys.admin.Restart;
+import com.estrelsteel.wowbot.command.sys.admin.ShutDown;
+import com.estrelsteel.wowbot.command.sys.admin.TimeOut;
+import com.estrelsteel.wowbot.command.user.Assemble;
 import com.estrelsteel.wowbot.command.user.Colour;
 import com.estrelsteel.wowbot.command.user.Politics;
 import com.estrelsteel.wowbot.command.user.Quiet;
@@ -40,11 +48,11 @@ import com.estrelsteel.wowbot.user.UserHandler;
 
 public class WowBot {
 	
-	public static Settings settings;	
-	public static final String title = "WowBot v1.5c (13)";
-	public static final String owner = "167026252597690369";
-	public static final String id = "266437681242701825";
-	public static final String path = GameFile.getCurrentPath();
+	public static Settings settings;
+	public static final String title = "WowBot v1.6a (14)";
+	public static long owner;
+	public static long id;
+	public static String path = GameFile.getCurrentPath();
 	
 	private boolean running;
 	
@@ -56,16 +64,23 @@ public class WowBot {
 	private GameCentre gc;
 	private EventManager em;
 	private DynamicWow wow;
+	private WowAudioCore wac;
+	private SFX sfx;
 	private UserHandler uh;
 	private long lastSave;
 	private WowGame game;
 	private Listener l;
+	@SuppressWarnings("unused")
+	private Serial serial;
 	
 	public static void main(String[] args) {
 //		TicTacToe ttt = new TicTacToe();
 //		ttt.printGame();
 		System.out.println(title + "\n\tBy: EstrelSteel");
 		settings = new Settings();
+		if(args.length > 0) {
+			path = args[0];
+		}
 		try {
 			new WowBot();
 		} 
@@ -83,8 +98,11 @@ public class WowBot {
 	}
 	
 	public WowBot() throws IOException {
-		GameFile tolkenFile = new GameFile(path + "/wowbot.txt");
-		tolken = tolkenFile.readFile().get(0).trim();
+		GameFile info = new GameFile(path + "/wowbot.txt");
+		info.setLines(info.readFile());
+		tolken = info.getLines().get(0).trim();
+		id = Long.parseLong(info.getLines().get(1).trim());
+		owner = Long.parseLong(info.getLines().get(2).trim());
 		game = new WowGame(title, "", GameType.DEFAULT);
 		
 		try {
@@ -107,6 +125,12 @@ public class WowBot {
 		gc = new GameCentre();
 		cmds = new HashMap<String, Command>();
 		wow = new DynamicWow();
+		wac = new WowAudioCore();
+		sfx = new SFX(new GameFile(path + "/sounds.txt"), wac, uh);
+		if(info.getLines().get(3).trim().equalsIgnoreCase("true")) {
+			System.out.println(WowBot.getMsgStart() + "Hotkeyboard enabled.");
+			serial = new Serial(sfx ,wac, info.getLines().get(4).trim().split(" "),info.getLines().get(5).trim().split(" "),  jda.getGuilds());
+		}
 		
 		cmds.put("wow", wow);
 		cmds.put("vvovv", wow);
@@ -140,9 +164,17 @@ public class WowBot {
 		cmds.put("watch", new Watch(uh));
 		cmds.put("changelog", new Changelog(new GameFile(path + "/changelog.txt")));
 		cmds.put("kaomoji", new Kaomoji(new GameFile(path + "/kaomoji.txt"), uh));
-		cmds.put("play", new SFX(new GameFile(path + "/sounds.txt"), true));
-		cmds.put("sfx", new SFX(new GameFile(path + "/sounds.txt"), false));
-		cmds.put("sound", new SFX(new GameFile(path + "/sounds.txt"), false));
+		cmds.put("sfx", sfx);
+		cmds.put("sound", sfx);
+		cmds.put("play", new Play(wac, new GameFile(path + "/audio-whitelist.txt"), uh));
+		cmds.put("pause", new Pause(wac, true, uh));
+		cmds.put("resume", new Pause(wac, false, uh));
+		cmds.put("skip", new Skip(wac, 0.5, uh));
+		cmds.put("queue", new Queue(wac));
+		cmds.put("summon", new Summon(wac, uh));
+		cmds.put("volume", new Volume(wac, uh));
+		cmds.put("vol", new Volume(wac, uh));
+		cmds.put("audioperms", new AudioPerms(uh));
 		cmds.put("team", new Team(2, 2));
 		cmds.put("die", new Random(6));
 		cmds.put("dice", new Random(6));
@@ -185,7 +217,19 @@ public class WowBot {
 				break;
 			case "help":
 				System.out.println(WowBot.getMsgStart() + "console has requested the help page.");
-				System.out.println("COMMANDS: help, shutdown, save, info, say");
+				System.out.println("COMMANDS: help, shutdown, save, info, say, queue");
+				break;
+			case "queue":
+				System.out.println(WowBot.getMsgStart() + "console has the player's queue.");
+				if(wac.getPlayer().getPlayingTrack() != null) {
+					System.out.println("Currently playing: " + wac.getPlayer().getPlayingTrack().getInfo().title);
+					for(int i = 0; i < wac.getAudioQueue().getQueue().size(); i++) {
+						System.out.println("\t" + (i + 1) + ".) " + wac.getAudioQueue().getQueue().get(i).getInfo().title);
+					}
+				}
+				else {
+					System.out.println("Nothing is playing.");
+				}
 				break;
 			case "say":
 				if(args.length > 1) {
@@ -240,22 +284,32 @@ public class WowBot {
 		return uh;
 	}
 	
+	public WowAudioCore getAudioCore() {
+		return wac;
+	}
+	
 	public void handleCommand(Parser.CommandContainer cmd) {
 		if(System.currentTimeMillis() - lastSave >= 86400000) {
 			System.out.println(WowBot.getMsgStart() + "Saving data...");
 			save();
 		}
 		if(cmds.containsKey(cmd.args[0])) {
-			boolean safe = cmds.get(cmd.args[0]).called(cmd.args, cmd.e);
-			if(safe) {
-				cmds.get(cmd.args[0]).action(cmd.args, cmd.e);
-				if(cmds.containsKey(cmd.args[0])) {
-					cmds.get(cmd.args[0]).executed(safe, cmd.e);
-				}
-				
+			if(cmd.args.length > 1 && (cmd.args[1].equalsIgnoreCase("help") || cmd.args[1].equalsIgnoreCase("?"))) {
+				cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help()).queue();
 			}
 			else {
-				cmds.get(cmd.args[0]).executed(safe, cmd.e);
+				boolean safe = cmds.get(cmd.args[0]).called(cmd.args, cmd.e);
+				if(safe) {
+					cmds.get(cmd.args[0]).action(cmd.args, cmd.e);
+					if(cmds.containsKey(cmd.args[0])) {
+						cmds.get(cmd.args[0]).executed(safe, cmd.e);
+					}
+					
+				}
+				else {
+					cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help());
+					cmds.get(cmd.args[0]).executed(safe, cmd.e);
+				}
 			}
 		}
 	}

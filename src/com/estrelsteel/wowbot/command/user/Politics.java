@@ -49,7 +49,7 @@ public class Politics implements Command {
 			if(roles.get(i).getName().equals("Politics")) {
 				e.getGuild().getController().removeRolesFromMember(e.getMember(), roles.get(i)).reason("Requested to be removed").queue();
 				System.out.println(WowBot.getMsgStart() + "Removed " + e.getAuthor().getName() + " from the politics channel.");
-				uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "Removed " + e.getAuthor().getAsMention() + " from Politics", false);
+				uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "Removed " + e.getAuthor().getAsMention() + " from Politics", false);
 //				e.getTextChannel().sendMessage("Removed " + e.getAuthor().getAsMention() + " from Politics").queue();
 				return;
 			}
@@ -58,7 +58,7 @@ public class Politics implements Command {
 		if(r != null) {
 			e.getGuild().getController().addRolesToMember(e.getMember(), r).reason("Requested to be added").queue();
 			System.out.println(WowBot.getMsgStart() + "Added " + e.getAuthor().getName() + " to the politics channel.");
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "Added " + e.getAuthor().getAsMention() + " to Politics", false);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "Added " + e.getAuthor().getAsMention() + " to Politics", false);
 //			e.getTextChannel().sendMessage("Added " + e.getAuthor().getAsMention() + " to Politics").queue();
 		}
 		else {
@@ -68,7 +68,9 @@ public class Politics implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "politics";
+		return "USAGE: " + WowBot.settings.getTrigger() + "politics"
+				+ "\nDESC: joins/leaves a political text channel."
+				+ "\nPERMS: all";
 	}
 
 	@Override

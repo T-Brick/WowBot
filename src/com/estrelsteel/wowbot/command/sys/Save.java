@@ -29,7 +29,9 @@ public class Save implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "save";
+		return "USAGE: " + WowBot.settings.getTrigger() + "save"
+				+ "\nDESC: backs up WowBot data."
+				+ "\nPERMS: all";
 	}
 
 	@Override

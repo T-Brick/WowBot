@@ -65,8 +65,8 @@ public class Kaomoji implements Command {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested all kaomoji.");
 			msg = WowBot.convertListToString(all);
 			System.out.println(msg.length());
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(0, 1801) + "```", false);
-			uh.findUser(e.getAuthor().getId()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(1801) + "```", false);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(0, 1801) + "```", false);
+			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(1801) + "```", false);
 			return;
 		}
 		for(i++; i < args.length; i++) {
@@ -76,6 +76,7 @@ public class Kaomoji implements Command {
 		if(!find) {
 			String k = kaomoji.get(request);
 			if(k != null) {
+				e.getMessage().delete().queue();
 				UserHandler.sendPublicMessage(k, e, true);
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested the '" + args[1].trim() + "' kaomoji.");
 			}
@@ -121,7 +122,11 @@ public class Kaomoji implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "kaomoji <name | &all&>";
+		return "USAGE: " + WowBot.settings.getTrigger() + "kaomoji [name | &all&]"
+				+ "\nDESC: sends a kaomoji from a list."
+				+ "\n\t[name] : replies with the specified kaomoji."
+				+ "\n\t[&all&] : sends the user a list of all the kaomoji avaliable."
+				+ "\nPERMS: all";
 	}
 
 	@Override

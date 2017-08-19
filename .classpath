@@ -2,7 +2,21 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/lavaplayer.jar"/>
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/JDA-3.2.0_237-withDependencies.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/base64-2.3.9.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/httpclient-4.5.2.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/httpcore-4.4.4.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/jackson-annotations-2.8.0.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/jackson-core-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/jackson-databind-2.8.5.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/jsoup-1.10.1.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/lavaplayer-1.2.42.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/lavaplayer-common-1.0.5.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/slf4j-api-1.7.22.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Downloads/slf4j-1.7.25/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Downloads/jSSC-2.7.0-Release/jssc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
