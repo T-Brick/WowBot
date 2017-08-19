@@ -1,5 +1,7 @@
 package com.estrelsteel.wowbot.command.audio;
 
+import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -47,7 +49,7 @@ public class WowAudioCore {
 	}
 	
 	public AudioManager switchVoiceChannel(VoiceChannel nc, boolean summon) {
-		if(summon || player.getPlayingTrack() == null) {
+		if(nc != null && (summon || player.getPlayingTrack() == null)) {
 			AudioManager am = nc.getGuild().getAudioManager();
 			am.openAudioConnection(nc);
 			c = nc;
@@ -55,7 +57,7 @@ public class WowAudioCore {
 		}
 		AudioManager am = c.getGuild().getAudioManager();
 		am.openAudioConnection(c);
-		return null;
+		return am;
 	}
 	
 	public String getStringDuration() {
@@ -114,18 +116,29 @@ public class WowAudioCore {
 		getAudioPlayerManager().loadItem(file, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added an audio track (" + track.getInfo().title + " | " + track.getInfo().uri + "), it will play " + getStringDuration() + ".");
-				if(msg) {
-					e.getTextChannel().sendMessage("**" + track.getInfo().title + "** has been added to the queue. It will start " + getStringDuration()).queue();
+				if(e != null) {
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added an audio track (" + track.getInfo().title + " | " + track.getInfo().uri + "), it will play " + getStringDuration() + ".");
+					if(msg) {
+						e.getTextChannel().sendMessage("**" + track.getInfo().title + "** has been added to the queue. It will start " + getStringDuration() + ".").complete().delete().queueAfter(30, TimeUnit.SECONDS);
+					}
+					if(queue.getTextChannel() == null || e.getTextChannel().getIdLong() != queue.getTextChannel().getIdLong()) {
+						queue.setTextChannel(e.getTextChannel());
+					}
 				}
 				getAudioQueue().queue(track);
+				
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added a playlist (" + playlist.getTracks().size() + " items), it will play " + getStringDuration() + ".");
-				if(msg) {
-					e.getTextChannel().sendMessage("Loading " + playlist.getTracks().size() + " items.").queue();
+				if(e != null) {
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added a playlist (" + playlist.getTracks().size() + " items), it will play " + getStringDuration() + ".");
+					if(msg) {
+						e.getTextChannel().sendMessage("Loading " + playlist.getTracks().size() + " items.").complete().delete().queueAfter(30, TimeUnit.SECONDS);
+					}
+					if((queue.getTextChannel() == null || e.getTextChannel().getIdLong() != queue.getTextChannel().getIdLong())) {
+						queue.setTextChannel(e.getTextChannel());
+					}
 				}
 				for(int i = 0; i < playlist.getTracks().size(); i++) {
 					getAudioQueue().queue(playlist.getTracks().get(i));
@@ -135,7 +148,9 @@ public class WowAudioCore {
 			@Override
 			public void noMatches() {
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " requested a track that doesn't exist.");
-				e.getTextChannel().sendMessage("Could not find this item.").queue();
+				if(msg && e != null) {
+					e.getTextChannel().sendMessage("Could not find this item.").queue();
+				}
 			}
 
 			@Override

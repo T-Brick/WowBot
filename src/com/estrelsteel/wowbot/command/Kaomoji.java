@@ -76,6 +76,7 @@ public class Kaomoji implements Command {
 		if(!find) {
 			String k = kaomoji.get(request);
 			if(k != null) {
+				e.getMessage().delete().queue();
 				UserHandler.sendPublicMessage(k, e, true);
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested the '" + args[1].trim() + "' kaomoji.");
 			}

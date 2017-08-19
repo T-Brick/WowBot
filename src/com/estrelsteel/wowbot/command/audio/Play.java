@@ -2,6 +2,7 @@ package com.estrelsteel.wowbot.command.audio;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -60,6 +61,7 @@ public class Play implements Command {
 			}
 			if(found) {
 				wac.loadTrack(args[1], wac.switchVoiceChannel(c, false), e, true);
+				e.getMessage().delete().queueAfter(30, TimeUnit.SECONDS);
 			}
 			else {
 				e.getTextChannel().sendMessage("This link is not on the whitelist for valid links.\nYou can only play videos from:"

@@ -1,5 +1,7 @@
 package com.estrelsteel.wowbot.command.audio;
 
+import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
@@ -37,7 +39,8 @@ public class Volume implements Command {
 				int vol = Integer.parseInt(args[1]);
 				int old = wac.getPlayer().getVolume();
 				wac.getPlayer().setVolume(vol);
-				e.getTextChannel().sendMessage("Changed the volume from " + old + " to " + vol + ".").queue();
+				e.getTextChannel().sendMessage("Changed the volume from " + old + " to " + vol + ".").complete().delete().queueAfter(30, TimeUnit.SECONDS);
+				e.getMessage().delete().queueAfter(30, TimeUnit.SECONDS);
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " changed the volume from " + old + " to " + vol + ".");
 			}
 			catch(NumberFormatException er) {

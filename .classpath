@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/lavaplayer-common-1.0.5.jar"/>
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/slf4j-api-1.7.22.jar"/>
 	<classpathentry kind="lib" path="/Users/justin/Downloads/slf4j-1.7.25/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Downloads/jSSC-2.7.0-Release/jssc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

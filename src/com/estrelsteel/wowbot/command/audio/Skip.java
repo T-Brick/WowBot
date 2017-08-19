@@ -1,6 +1,7 @@
 package com.estrelsteel.wowbot.command.audio;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -40,15 +41,21 @@ public class Skip implements Command {
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
 		VoiceChannel c = VoiceHelp.determineChannel(e);
-		if(c == null  || c.getIdLong() != wac.getVoiceChannel().getIdLong()) {
+		e.getMessage().delete().queue();
+		if(wac.getPlayer().getPlayingTrack() ==  null) {
+			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " attempted to skip but nothing is playing.");
+			e.getTextChannel().sendMessage("The player isn't playing.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+		}
+		else if(c == null  || c.getIdLong() != wac.getVoiceChannel().getIdLong()) {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " attempted to skip but their not in the voice channel.");
-			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " you need to be in the voice channel to skip.").queue();
+			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " you need to be in the voice channel to skip.").complete().delete().queueAfter(30, TimeUnit.SECONDS);
 		}
 		else {
-			if(e.getMember().isOwner()) {
+			if(e.getGuild().getOwner().getUser().getIdLong() == e.getAuthor().getIdLong()) {
 				wac.getAudioQueue().nextTrack();
-				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " skipped the current song.");
-				e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " skipped the song.").queue();
+				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " skipped the current audio track.");
+				e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " skipped the audio track.").complete().delete().queueAfter(30, TimeUnit.SECONDS);
+				votes = new ArrayList<Long>();
 			}
 			else {
 				if(!wac.getPlayer().getPlayingTrack().getIdentifier().equals(vid)) {
@@ -59,20 +66,23 @@ public class Skip implements Command {
 					if(votes.get(i) == e.getAuthor().getIdLong()) {
 						votes.remove(i);
 						i--;
-						System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " removed their vote to skip the current song.");
-						e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " removed their vote to skip. " + (int) (c.getMembers().size() * percent) + " votes needed.").queue();
+						System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " removed their vote to skip the current audio track.");
+						e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " removed their vote to skip. " + (int) (c.getMembers().size() * percent) 
+								+ " votes needed.").complete().delete().queueAfter(30, TimeUnit.SECONDS);
 						return;
 					}
 				}
 				votes.add(e.getAuthor().getIdLong());
-				if((int) (c.getMembers().size() * percent) > 0) {
-					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " voted to skip the current song.");
-					e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " voted to skip. " + (int) (c.getMembers().size() * percent) + " more votes needed.").queue();
+				if((int) (c.getMembers().size() * percent) > votes.size()) {
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " voted to skip the current audio track.");
+					e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " voted to skip. " + (int) (c.getMembers().size() * percent) + " more votes needed.")
+						.complete().delete().queueAfter(30, TimeUnit.SECONDS);
 				}
 				else {
 					wac.getAudioQueue().nextTrack();
-					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " skipped the current song.");
-					e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " skipped the song.").queue();
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " skipped the current audio tracks.");
+					e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " skipped the audio track.").complete().delete().queueAfter(30, TimeUnit.SECONDS);
+					votes = new ArrayList<Long>();
 				}
 			}
 		}

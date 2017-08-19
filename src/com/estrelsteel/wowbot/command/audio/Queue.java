@@ -21,6 +21,7 @@ public class Queue implements Command {
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
 		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " requested the audio queue.");
+		e.getMessage().delete().queue();
 		String msg;
 		if(wac.getPlayer().getPlayingTrack() != null) {
 			msg = "**Currently playing: " + wac.getPlayer().getPlayingTrack().getInfo().title + "**";

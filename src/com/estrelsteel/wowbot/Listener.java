@@ -63,6 +63,9 @@ public class Listener extends ListenerAdapter {
 				e.getGuild().getController().removeSingleRoleFromMember(e.getMember(), e.getMember().getRoles().get(i)).queue();
 			}
 		}
+		if(e.getMember().getUser().getIdLong() == WowBot.id) {
+			bot.getAudioCore().setVoiceChannel(null);
+		}
 	}
 	
 	public void onGuildMemberNickChange(GuildMemberNickChangeEvent e) {

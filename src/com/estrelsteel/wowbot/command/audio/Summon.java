@@ -1,5 +1,7 @@
 package com.estrelsteel.wowbot.command.audio;
 
+import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -33,12 +35,13 @@ public class Summon implements Command {
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
 		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " summoned wowbot.");
+		e.getMessage().delete().queue();
 		VoiceChannel c = VoiceHelp.determineChannel(e);
 		if(c != null) {
 			wac.switchVoiceChannel(c, true);
 		}
 		else {
-			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " you need to be in a voice channel.").queue();
+			e.getTextChannel().sendMessage(e.getAuthor().getAsMention() + " you need to be in a voice channel.").complete().delete().queueAfter(30, TimeUnit.SECONDS);
 		}
 	}
 

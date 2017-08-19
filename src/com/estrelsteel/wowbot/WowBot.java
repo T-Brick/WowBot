@@ -50,8 +50,8 @@ public class WowBot {
 	
 	public static Settings settings;
 	public static final String title = "WowBot v1.6a (14)";
-	public static String owner;
-	public static String id;
+	public static long owner;
+	public static long id;
 	public static String path = GameFile.getCurrentPath();
 	
 	private boolean running;
@@ -65,10 +65,13 @@ public class WowBot {
 	private EventManager em;
 	private DynamicWow wow;
 	private WowAudioCore wac;
+	private SFX sfx;
 	private UserHandler uh;
 	private long lastSave;
 	private WowGame game;
 	private Listener l;
+	@SuppressWarnings("unused")
+	private Serial serial;
 	
 	public static void main(String[] args) {
 //		TicTacToe ttt = new TicTacToe();
@@ -98,8 +101,8 @@ public class WowBot {
 		GameFile info = new GameFile(path + "/wowbot.txt");
 		info.setLines(info.readFile());
 		tolken = info.getLines().get(0).trim();
-		id = info.getLines().get(1).trim();
-		owner = info.getLines().get(2).trim();
+		id = Long.parseLong(info.getLines().get(1).trim());
+		owner = Long.parseLong(info.getLines().get(2).trim());
 		game = new WowGame(title, "", GameType.DEFAULT);
 		
 		try {
@@ -123,6 +126,11 @@ public class WowBot {
 		cmds = new HashMap<String, Command>();
 		wow = new DynamicWow();
 		wac = new WowAudioCore();
+		sfx = new SFX(new GameFile(path + "/sounds.txt"), wac, uh);
+		if(info.getLines().get(3).trim().equalsIgnoreCase("true")) {
+			System.out.println(WowBot.getMsgStart() + "Hotkeyboard enabled.");
+			serial = new Serial(sfx ,wac, info.getLines().get(4).trim().split(" "),info.getLines().get(5).trim().split(" "),  jda.getGuilds());
+		}
 		
 		cmds.put("wow", wow);
 		cmds.put("vvovv", wow);
@@ -156,8 +164,8 @@ public class WowBot {
 		cmds.put("watch", new Watch(uh));
 		cmds.put("changelog", new Changelog(new GameFile(path + "/changelog.txt")));
 		cmds.put("kaomoji", new Kaomoji(new GameFile(path + "/kaomoji.txt"), uh));
-		cmds.put("sfx", new SFX(new GameFile(path + "/sounds.txt"), wac, uh));
-		cmds.put("sound", new SFX(new GameFile(path + "/sounds.txt"), wac, uh));
+		cmds.put("sfx", sfx);
+		cmds.put("sound", sfx);
 		cmds.put("play", new Play(wac, new GameFile(path + "/audio-whitelist.txt"), uh));
 		cmds.put("pause", new Pause(wac, true, uh));
 		cmds.put("resume", new Pause(wac, false, uh));
@@ -274,6 +282,10 @@ public class WowBot {
 	
 	public UserHandler getUserHandler() {
 		return uh;
+	}
+	
+	public WowAudioCore getAudioCore() {
+		return wac;
 	}
 	
 	public void handleCommand(Parser.CommandContainer cmd) {
