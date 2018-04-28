@@ -107,7 +107,7 @@ public class Serial implements SerialPortEventListener {
 							}
 							else if(msg.substring(i, i + 1).equals("-")) {
 								int dyn = Integer.parseInt(msg.substring(i + 1, i + 5));
-								if(dyn != dyn_used) {
+								if(dyn  > dyn_used + 12 || dyn < dyn_used - 12) {
 									dyn_used = -1;
 									lastDyn[writeDyn] = dyn;
 									writeDyn++;

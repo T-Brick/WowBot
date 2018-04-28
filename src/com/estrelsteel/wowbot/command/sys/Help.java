@@ -1,5 +1,6 @@
 package com.estrelsteel.wowbot.command.sys;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
@@ -72,15 +73,19 @@ public class Help implements Command {
 //				+ WowBot.settings.getTrigger() + "timeout, "
 //				+ WowBot.settings.getTrigger() + "watch"
 //				+ "```",e, true);
-			String msg = "```Commands: ";
+			String msg = "";
 			for(int i = 0; i < cmds.length; i++) {
 				if(i != 0) {
-					msg = msg + ", ";
+					msg = msg + "\n";
 				}
 				msg = msg + WowBot.settings.getTrigger() + cmds[i];
 			}
-			msg = msg + "```";
-			UserHandler.sendPublicMessage(msg, e, true);
+			msg = msg + "";
+
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.setColor(e.getMember().getColor());
+			builder.addField("Command List:", msg, false);
+			e.getTextChannel().sendMessage(builder.build()).queue();
 		}
 		else {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested help for the" + args[1].trim() + " command.");

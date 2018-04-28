@@ -1,7 +1,9 @@
 package com.estrelsteel.wowbot.command.audio;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -24,12 +26,34 @@ public class WowAudioCore {
 	
 	private VoiceChannel c;
 	
-	public WowAudioCore() {
+	public WowAudioCore(JDA jda) {
 		apm = new DefaultAudioPlayerManager();
 		AudioSourceManagers.registerLocalSource(apm);
 		AudioSourceManagers.registerRemoteSources(apm);
 		player = apm.createPlayer();
-		queue = new AudioQueue(player);
+		queue = new AudioQueue(player, jda);
+	}
+	
+	public static String getVisibleTitle(AudioTrack track) {
+		String title = track.getInfo().title;
+		if(title.equalsIgnoreCase("Unknown title")) {
+			title = new File(track.getInfo().uri).getName();
+			title = title.split(".wav")[0];
+			title = title.replaceAll("_", " ");
+			String[] title_words = title.split(" ");
+			title = "";
+			for(int i = 0; i < title_words.length; i++) {
+				if(title_words[i].length() > 1) {
+					title = title + title_words[i].substring(0, 1).toUpperCase();
+					title = title + title_words[i].substring(1) + " ";
+				}
+				else {
+					title = title + title_words[i].toUpperCase() + " ";
+				}
+			}
+			title = title.trim();
+		}
+		return title;
 	}
 	
 	public AudioPlayerManager getAudioPlayerManager() {
@@ -117,9 +141,9 @@ public class WowAudioCore {
 			@Override
 			public void trackLoaded(AudioTrack track) {
 				if(e != null) {
-					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added an audio track (" + track.getInfo().title + " | " + track.getInfo().uri + "), it will play " + getStringDuration() + ".");
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added an audio track (" + getVisibleTitle(track) + " | " + track.getInfo().uri + "), it will play " + getStringDuration() + ".");
 					if(msg) {
-						e.getTextChannel().sendMessage("**" + track.getInfo().title + "** has been added to the queue. It will start " + getStringDuration() + ".").complete().delete().queueAfter(30, TimeUnit.SECONDS);
+						e.getTextChannel().sendMessage("**" + getVisibleTitle(track) + "** has been added to the queue. It will start " + getStringDuration() + ".").complete().delete().queueAfter(30, TimeUnit.SECONDS);
 					}
 					if(queue.getTextChannel() == null || e.getTextChannel().getIdLong() != queue.getTextChannel().getIdLong()) {
 						queue.setTextChannel(e.getTextChannel());
