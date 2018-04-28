@@ -76,24 +76,16 @@ public class WowBot {
 	public static void main(String[] args) {
 //		TicTacToe ttt = new TicTacToe();
 //		ttt.printGame();
-//		System.out.println(title + "\n\tBy: EstrelSteel");
-//		settings = new Settings();
-//		if(args.length > 0) {
-//			path = args[0];
-//		}
-//		try {
-//			new WowBot();
-//		} 
-//		catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		test();
-	}
-	
-	public static void test() {
-		int count = 0;
-		while(count++ < 10) {
-			System.out.println(count);
+		System.out.println(title + "\n\tBy: EstrelSteel");
+		settings = new Settings();
+		if(args.length > 0) {
+			path = args[0];
+		}
+		try {
+			new WowBot();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
