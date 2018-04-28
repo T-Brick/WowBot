@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -83,7 +84,6 @@ public class SFX implements Command {
 	public void action(String[] args, MessageReceivedEvent e) {
 		VoiceChannel c = VoiceHelp.determineChannel(e);
 		if(c != null) {
-			
 			String request = "";
 			boolean find = false;
 			int arg = 1;
@@ -98,7 +98,11 @@ public class SFX implements Command {
 				names.addAll(songs.keySet());
 				String o = WowBot.convertListToString(names);
 				System.out.println(WowBot.getMsgStart() + e.getAuthor().getName() + " requested the list of sounds.");
-				e.getTextChannel().sendMessage("Here's the list of sounds:\n```" + o + "```").queue();
+				EmbedBuilder builder = new EmbedBuilder();
+				builder.setColor(e.getMember().getColor());
+				builder.addField("Sound Effects:", o, false);
+				builder.setFooter("Type in the beginning of a sound effect to search for it.", e.getGuild().getMemberById(WowBot.id).getUser().getAvatarUrl());
+				e.getTextChannel().sendMessage(builder.build()).queue();
 				return;
 			}
 			else if(args[1].trim().equalsIgnoreCase("add") || args[1].trim().equalsIgnoreCase("+")) {
@@ -168,9 +172,7 @@ public class SFX implements Command {
 				else {
 					UserHandler.sendPublicMessage(match.size() + " matches found: \n```" + msg + ".```", e, true);
 				}
-				
 			}
-			
 		}
 		else {
 			e.getTextChannel().sendMessage("You need to be in a voice channel to use this command.").queue();

@@ -16,6 +16,9 @@ public class UserSettings {
 	private ArrayList<User> watching;
 	private boolean[] music;
 	// PLAY SFX SKIP PAUSE SUMMON VOLUME
+	private boolean blacklist;
+	private int b_length;
+	private long b_start;
 	
 	public static final int version = 3;
 	public static final String split = "/";
@@ -72,6 +75,18 @@ public class UserSettings {
 		return line.split(split);
 	}
 	
+	public boolean isBlacklist() {
+		return blacklist;
+	}
+	
+	public int getBlacklistLength() {
+		return b_length;
+	}
+	
+	public long getBlacklistStart() {
+		return b_start;
+	}
+	
 	public void setID(long id) {
 		this.id = id;
 	}
@@ -98,6 +113,18 @@ public class UserSettings {
 	
 	public void setMusicRules(boolean[] music) {
 		this.music = music;
+	}
+	
+	public void setBlacklist(boolean blacklist) {
+		this.blacklist = blacklist;
+	}
+	
+	public void setBlacklistLength(int b_length) {
+		this.b_length = b_length;
+	}
+	
+	public void setBlacklistStart(long b_start) {
+		this.b_start = b_start;
 	}
 	
 	public UserSettings loadUserSettings(String line) {
