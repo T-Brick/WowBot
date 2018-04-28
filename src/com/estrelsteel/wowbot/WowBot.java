@@ -9,7 +9,7 @@ import java.util.Scanner;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game.GameType;
+import net.dv8tion.jda.core.entities.Game;
 
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.command.Kaomoji;
@@ -31,6 +31,7 @@ import com.estrelsteel.wowbot.command.sys.Info;
 import com.estrelsteel.wowbot.command.sys.Random;
 import com.estrelsteel.wowbot.command.sys.Save;
 import com.estrelsteel.wowbot.command.sys.WhoIs;
+import com.estrelsteel.wowbot.command.sys.admin.Blacklist;
 import com.estrelsteel.wowbot.command.sys.admin.Restart;
 import com.estrelsteel.wowbot.command.sys.admin.ShutDown;
 import com.estrelsteel.wowbot.command.sys.admin.TimeOut;
@@ -49,7 +50,7 @@ import com.estrelsteel.wowbot.user.UserHandler;
 public class WowBot {
 	
 	public static Settings settings;
-	public static final String title = "WowBot v1.6a (14)";
+	public static final String title = "WowBot v1.6d (17)";
 	public static long owner;
 	public static long id;
 	public static String path = GameFile.getCurrentPath();
@@ -68,7 +69,6 @@ public class WowBot {
 	private SFX sfx;
 	private UserHandler uh;
 	private long lastSave;
-	private WowGame game;
 	private Listener l;
 	@SuppressWarnings("unused")
 	private Serial serial;
@@ -76,16 +76,24 @@ public class WowBot {
 	public static void main(String[] args) {
 //		TicTacToe ttt = new TicTacToe();
 //		ttt.printGame();
-		System.out.println(title + "\n\tBy: EstrelSteel");
-		settings = new Settings();
-		if(args.length > 0) {
-			path = args[0];
-		}
-		try {
-			new WowBot();
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
+//		System.out.println(title + "\n\tBy: EstrelSteel");
+//		settings = new Settings();
+//		if(args.length > 0) {
+//			path = args[0];
+//		}
+//		try {
+//			new WowBot();
+//		} 
+//		catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		test();
+	}
+	
+	public static void test() {
+		int count = 0;
+		while(count++ < 10) {
+			System.out.println(count);
 		}
 	}
 	
@@ -103,11 +111,10 @@ public class WowBot {
 		tolken = info.getLines().get(0).trim();
 		id = Long.parseLong(info.getLines().get(1).trim());
 		owner = Long.parseLong(info.getLines().get(2).trim());
-		game = new WowGame(title, "", GameType.DEFAULT);
-		
 		try {
 			l = new Listener(this, null);
-			jda = new JDABuilder(AccountType.BOT).setGame(game).addEventListener(l).setToken(tolken).buildBlocking();
+			jda = new JDABuilder(AccountType.BOT).addEventListener(l).setToken(tolken).buildBlocking();
+			jda.getPresence().setGame(Game.of(title));
 			jda.setAutoReconnect(true);
 		}
 		catch(Exception e) {
@@ -125,7 +132,7 @@ public class WowBot {
 		gc = new GameCentre();
 		cmds = new HashMap<String, Command>();
 		wow = new DynamicWow();
-		wac = new WowAudioCore();
+		wac = new WowAudioCore(jda);
 		sfx = new SFX(new GameFile(path + "/sounds.txt"), wac, uh);
 		if(info.getLines().get(3).trim().equalsIgnoreCase("true")) {
 			System.out.println(WowBot.getMsgStart() + "Hotkeyboard enabled.");
@@ -160,6 +167,7 @@ public class WowBot {
 //		cmds.put("playwow", new PlayWow());
 		cmds.put("clean", new Clean(this));
 		cmds.put("timeout", new TimeOut(jda.getGuilds()));
+		cmds.put("blacklist", new Blacklist(jda.getGuilds()));
 		cmds.put("restart", new Restart(this));
 		cmds.put("watch", new Watch(uh));
 		cmds.put("changelog", new Changelog(new GameFile(path + "/changelog.txt")));
@@ -218,6 +226,17 @@ public class WowBot {
 			case "help":
 				System.out.println(WowBot.getMsgStart() + "console has requested the help page.");
 				System.out.println("COMMANDS: help, shutdown, save, info, say, queue");
+				break;
+			case "game":
+				if(args.length > 1) {
+					System.out.println(WowBot.getMsgStart() + "console has changed the game.");
+					String msg = "";
+					for(int i = 1; i < args.length; i++) {
+						msg = msg + args[i] + " ";
+					}
+					msg.trim();
+					jda.getPresence().setGame(Game.of(msg));
+				}
 				break;
 			case "queue":
 				System.out.println(WowBot.getMsgStart() + "console has the player's queue.");
@@ -329,7 +348,8 @@ public class WowBot {
 		save();
 		running = false;
 		if(!restart) {
-			jda.shutdown();
+			jda.shutdownNow();
+			jda = null;
 			System.exit(0);
 		}
 	}

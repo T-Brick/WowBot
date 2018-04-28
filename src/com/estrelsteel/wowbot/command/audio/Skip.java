@@ -24,6 +24,7 @@ public class Skip implements Command {
 		vid = "";
 		votes = new ArrayList<Long>();
 		this.uh = uh;
+		this.percent = percent;
 	}
 	
 	@Override

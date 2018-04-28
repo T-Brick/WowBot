@@ -11,22 +11,22 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
 
-public class TimeOut implements Command {
+public class Blacklist implements Command {
 	
-	private HashMap<Guild, Role> timeout;
+	private HashMap<Guild, Role> blacklist;
 	
-	public TimeOut(List<Guild> guilds) {
-		timeout = new HashMap<Guild, Role>();
+	public Blacklist(List<Guild> guilds) {
+		blacklist = new HashMap<Guild, Role>();
 		boolean add = false;
 		for(Guild g : guilds) {
 			for(Role r : g.getRoles()) {
-				if(r.getName().equalsIgnoreCase("In-Timeout") || r.getName().equalsIgnoreCase("Timeout")) {
-					timeout.put(g, r);
+				if(r.getName().startsWith("Blacklist")) {
+					blacklist.put(g, r);
 					add = true;
 				}
 			}
 			if(!add) {
-				timeout.put(g, null);
+				blacklist.put(g, null);
 			}
 			add = false;
 		}
@@ -35,7 +35,7 @@ public class TimeOut implements Command {
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
 		if((e.getGuild().getOwner().equals(e.getMember()) || (e.getMember().getRoles().size() > 0 && e.getMember().getRoles().get(0).getName().equalsIgnoreCase("admin"))) 
-				&& args.length >= 1 && e.getTextChannel() != null && timeout.get(e.getGuild()) != null) {
+				&& args.length >= 1 && e.getTextChannel() != null && blacklist.get(e.getGuild()) != null) {
 			return true;
 		}
 		return false;
@@ -69,15 +69,15 @@ public class TimeOut implements Command {
 				}
 			}
 			if(t != null) {
-				if(t.getRoles().size() > 0 && (t.getRoles().get(0).getName().equalsIgnoreCase("In-Timeout") || t.getRoles().get(0).getName().equalsIgnoreCase("Timeout"))) {
-					e.getGuild().getController().removeRolesFromMember(t, timeout.get(e.getGuild())).reason("Admin request").queue();
-					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " removed "+ s + " from time out.");
-					e.getTextChannel().sendMessage("Removed " + t.getAsMention() + " from timeout.").queue();
+				if(t.getRoles().size() > 0 && (t.getRoles().get(0).getName().equalsIgnoreCase("Blacklist") || t.getRoles().get(0).getName().equalsIgnoreCase("Blacklist"))) {
+					e.getGuild().getController().removeRolesFromMember(t, blacklist.get(e.getGuild())).reason("Admin request").queue();
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " removed "+ s + " from blacklist.");
+					e.getTextChannel().sendMessage("Removed " + t.getAsMention() + " from blacklist.").queue();
 				}
 				else {
-					e.getGuild().getController().addRolesToMember(t, timeout.get(e.getGuild())).reason("Admin request").queue();
-					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added "+ s + " to time out.");
-					e.getTextChannel().sendMessage("Added " + t.getAsMention() + " to timeout.").queue();
+					e.getGuild().getController().addRolesToMember(t, blacklist.get(e.getGuild())).reason("Admin request").queue();
+					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " added "+ s + " to blacklist.");
+					e.getTextChannel().sendMessage("Added " + t.getAsMention() + " to blacklist.").queue();
 				}
 			}
 		}
@@ -85,9 +85,9 @@ public class TimeOut implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "timeout [user]"
-				+ "\nDESC: manages timeout."
-				+ "\n\t[NULL] : puts [user] in timeout."
+		return "USAGE: " + WowBot.settings.getTrigger() + "blacklist [user]"
+				+ "\nDESC: manages blacklist."
+				+ "\n\t[NULL] : puts [user] in blacklist."
 				+ "\nPERMS: admin";
 	}
 

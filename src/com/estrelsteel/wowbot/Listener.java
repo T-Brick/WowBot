@@ -3,7 +3,10 @@ package com.estrelsteel.wowbot;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
@@ -27,6 +30,14 @@ public class Listener extends ListenerAdapter {
 	public void setUserHandler(UserHandler uh) {
 		this.uh = uh;
 		
+	}
+	
+	public void onDisconnectEvent(DisconnectEvent e) {
+		System.err.println(WowBot.getMsgStart() + "Disconnected from Discord.");
+	}
+	
+	public void onReconnectedEvent(ReconnectedEvent e) {
+		System.err.println(WowBot.getMsgStart() + "Reconnected to Discord.");
 	}
 	
 	public void onMessageReceived(MessageReceivedEvent e) {
@@ -59,7 +70,7 @@ public class Listener extends ListenerAdapter {
 	public void onGuildVoiceLeave(GuildVoiceLeaveEvent e) {
 		for(int i = 0; i < e.getMember().getRoles().size(); i++) {
 			if(e.getMember().getRoles().get(i).getName().startsWith("Team ")) {
-				e.getGuild().getPublicChannel().sendMessage(e.getMember().getAsMention() + " has left " + e.getMember().getRoles().get(i).getName() + ".").queue();
+				e.getGuild().getDefaultChannel().sendMessage(e.getMember().getAsMention() + " has left " + e.getMember().getRoles().get(i).getName() + ".").queue();
 				e.getGuild().getController().removeSingleRoleFromMember(e.getMember(), e.getMember().getRoles().get(i)).queue();
 			}
 		}
@@ -69,16 +80,22 @@ public class Listener extends ListenerAdapter {
 	}
 	
 	public void onGuildMemberNickChange(GuildMemberNickChangeEvent e) {
+		EmbedBuilder builder = new EmbedBuilder();
+		builder.setColor(e.getMember().getColor());
+		
 		if(e.getNewNick() != null && e.getPrevNick() != null) {
-			e.getGuild().getTextChannels().get(0).sendMessage(e.getUser().getAsMention() + " has changed their nickname from " + e.getPrevNick() + " to " + e.getNewNick()).queue();
+			builder.addField("", e.getPrevNick() + " has changed their nickname to " + e.getUser().getAsMention(), false);
+			e.getGuild().getTextChannels().get(0).sendMessage(builder.build()).queue();
 			System.out.println(WowBot.getMsgStart() + "" + e.getUser().getAsMention() + " has changed their nickname from " + e.getPrevNick() + " to " + e.getNewNick());
 		}
 		else if(e.getNewNick() != null && e.getPrevNick() == null) {
-			e.getGuild().getTextChannels().get(0).sendMessage(e.getUser().getAsMention() + " has made " + e.getNewNick() + " their nickname.").queue();
+			builder.addField("", e.getUser().getAsMention() + " has made " + e.getNewNick() + " their nickname.", false);
+			e.getGuild().getTextChannels().get(0).sendMessage(builder.build()).queue();
 			System.out.println(WowBot.getMsgStart() + "" + e.getUser().getAsMention() + " has made " + e.getNewNick() + " their nickname.");
 		}
 		else if(e.getNewNick() == null && e.getPrevNick() != null) {
-			e.getGuild().getTextChannels().get(0).sendMessage(e.getUser().getAsMention() + " has removed their nickname, " + e.getPrevNick()+ ".").queue();
+			builder.addField("", e.getUser().getAsMention() + " has removed their nickname, " + e.getPrevNick() + ".", false);
+			e.getGuild().getTextChannels().get(0).sendMessage(builder.build()).queue();
 			System.out.println(WowBot.getMsgStart() + "" + e.getUser().getAsMention() + " has removed their nickname, " + e.getPrevNick() + ".");
 		}
 	}
