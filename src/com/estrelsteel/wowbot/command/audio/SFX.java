@@ -155,7 +155,12 @@ public class SFX implements Command {
 						UserHandler.sendPublicMessage("That sound does not exist.", e, true);
 					}
 					else {
-						UserHandler.sendPublicMessage("That sound does not exist... But could you mean:\n```" + msg + ".```", e, true);
+						EmbedBuilder builder = new EmbedBuilder();
+						builder.setColor(e.getMember().getColor());
+						builder.addField("That sound does not exist... But could you mean:", msg, false);
+						builder.setFooter("Type in the beginning of a sound effect to search for it.", e.getGuild().getMemberById(WowBot.id).getUser().getAvatarUrl());
+						e.getTextChannel().sendMessage(builder.build()).queue();
+//						UserHandler.sendPublicMessage("That sound does not exist... But could you mean:\n```" + msg + ".```", e, true);
 					}
 				}
 			}

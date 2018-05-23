@@ -14,7 +14,7 @@ public class Help implements Command {
 	
 	public Help(WowBot b) {
 		this.b = b;
-		cmds = new String[28];
+		cmds = new String[29];
 		int i = 0;
 		cmds[i] = "assemble"; i++;
 		cmds[i] = "audioperms"; i++;
@@ -23,6 +23,7 @@ public class Help implements Command {
 		cmds[i] = "colour"; i++;
 		cmds[i] = "event"; i++;
 		cmds[i] = "help"; i++;
+		cmds[i] = "iogames"; i++;
 		cmds[i] = "info"; i++;
 		cmds[i] = "kaomoji"; i++;
 		cmds[i] = "mute"; i++;

@@ -48,7 +48,9 @@ public class WhoIs implements Command {
 					if(msg != "") {
 						msg = msg + "\n" + header + "\n";
 					}
-					if(m.getRoles().get(rval).getName().equalsIgnoreCase("In-Timeout") || m.getRoles().get(rval).getName().equalsIgnoreCase("Timeout")) {
+					if(m.getRoles().get(rval).getName().equalsIgnoreCase("In-Timeout") || m.getRoles().get(rval).getName().equalsIgnoreCase("Timeout") 
+							|| m.getRoles().get(rval).getName().equalsIgnoreCase("Blacklist") || m.getRoles().get(rval).getName().equalsIgnoreCase("admin")
+							|| m.getRoles().get(rval).getName().equalsIgnoreCase("That Guy/Confirmed Toxic") || m.getRoles().get(rval).getName().equalsIgnoreCase("AfricanAmerican-List")) {
 						rval = 1;
 					}
 					u_msg = "" + m.getAsMention() + " is " + m.getRoles().get(rval).getAsMention();
@@ -74,7 +76,7 @@ public class WhoIs implements Command {
 				u_msg = u_msg + "\n\t" + "quiet_start: " + u.getQuietStart();
 				u_msg = u_msg + "\n\t" + "quiet_length: " + u.getQuietLength();
 				u_msg = u_msg + "\n\t" + "mute: " + u.isMute();
-				u_msg = u_msg + "\n\t" + "audio: " + u.getMusicRules().toString();
+				u_msg = u_msg + "\n\t" + "audio: " + u.getMusicRulesString();
 				msg = msg + u_msg;
 				msg = msg + "";
 				u_msg = "";

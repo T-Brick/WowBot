@@ -71,6 +71,19 @@ public class UserSettings {
 		return music;
 	}
 	
+	public String getMusicRulesString() {
+		String s = "";
+		for(int i = 0; i < music.length; i++) {
+			if(music[i]) {
+				s = s + "1";
+			}
+			else {
+				s = s + "0";
+			}
+		}
+		return s;
+	}
+	
 	private static String[] createArgs(String line) {
 		return line.split(split);
 	}

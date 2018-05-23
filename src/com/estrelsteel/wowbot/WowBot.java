@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 
 import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.command.IOGames;
 import com.estrelsteel.wowbot.command.Kaomoji;
 import com.estrelsteel.wowbot.command.audio.AudioPerms;
 import com.estrelsteel.wowbot.command.audio.Pause;
@@ -50,7 +51,7 @@ import com.estrelsteel.wowbot.user.UserHandler;
 public class WowBot {
 	
 	public static Settings settings;
-	public static final String title = "WowBot v1.6d (17)";
+	public static final String title = "WowBot v1.7a (18)";
 	public static long owner;
 	public static long id;
 	public static String path = GameFile.getCurrentPath();
@@ -76,24 +77,16 @@ public class WowBot {
 	public static void main(String[] args) {
 //		TicTacToe ttt = new TicTacToe();
 //		ttt.printGame();
-//		System.out.println(title + "\n\tBy: EstrelSteel");
-//		settings = new Settings();
-//		if(args.length > 0) {
-//			path = args[0];
-//		}
-//		try {
-//			new WowBot();
-//		} 
-//		catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		test();
-	}
-	
-	public static void test() {
-		int count = 0;
-		while(count++ < 10) {
-			System.out.println(count);
+		System.out.println(title + "\n\tBy: EstrelSteel");
+		settings = new Settings();
+		if(args.length > 0) {
+			path = args[0];
+		}
+		try {
+			new WowBot();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -177,7 +170,7 @@ public class WowBot {
 		cmds.put("play", new Play(wac, new GameFile(path + "/audio-whitelist.txt"), uh));
 		cmds.put("pause", new Pause(wac, true, uh));
 		cmds.put("resume", new Pause(wac, false, uh));
-		cmds.put("skip", new Skip(wac, 0.5, uh));
+		cmds.put("skip", new Skip(wac, 0.25, uh));
 		cmds.put("queue", new Queue(wac));
 		cmds.put("summon", new Summon(wac, uh));
 		cmds.put("volume", new Volume(wac, uh));
@@ -190,6 +183,8 @@ public class WowBot {
 		cmds.put("random", new Random(0));
 		cmds.put("rand", new Random(0));
 		cmds.put("ran", new Random(0));
+		cmds.put("iogames", new IOGames(new GameFile(path + "/iogames.txt")));
+		cmds.put("iogame", new IOGames(new GameFile(path + "/iogames.txt")));
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
 		running = true;
@@ -307,28 +302,33 @@ public class WowBot {
 		return wac;
 	}
 	
-	public void handleCommand(Parser.CommandContainer cmd) {
+	public void handleCommand(ArrayList<Parser.CommandContainer> cmdList) {
 		if(System.currentTimeMillis() - lastSave >= 86400000) {
 			System.out.println(WowBot.getMsgStart() + "Saving data...");
 			save();
 		}
-		if(cmds.containsKey(cmd.args[0])) {
-			if(cmd.args.length > 1 && (cmd.args[1].equalsIgnoreCase("help") || cmd.args[1].equalsIgnoreCase("?"))) {
-				cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help()).queue();
-			}
-			else {
-				boolean safe = cmds.get(cmd.args[0]).called(cmd.args, cmd.e);
-				if(safe) {
-					cmds.get(cmd.args[0]).action(cmd.args, cmd.e);
-					if(cmds.containsKey(cmd.args[0])) {
-						cmds.get(cmd.args[0]).executed(safe, cmd.e);
-					}
-					
+		long cmdStart = System.currentTimeMillis();
+		for(Parser.CommandContainer cmd : cmdList) {
+			if(cmds.containsKey(cmd.args[0])) {
+				if(cmd.args.length > 1 && (cmd.args[1].equalsIgnoreCase("help") || cmd.args[1].equalsIgnoreCase("?"))) {
+					cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help()).queue();
 				}
 				else {
-					cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help());
-					cmds.get(cmd.args[0]).executed(safe, cmd.e);
+					boolean safe = cmds.get(cmd.args[0]).called(cmd.args, cmd.e);
+					if(safe) {
+						cmds.get(cmd.args[0]).action(cmd.args, cmd.e);
+						if(cmds.containsKey(cmd.args[0])) {
+							cmds.get(cmd.args[0]).executed(safe, cmd.e);
+						}
+						
+					}
+					else {
+						cmd.e.getTextChannel().sendMessage(cmds.get(cmd.args[0]).help());
+						cmds.get(cmd.args[0]).executed(safe, cmd.e);
+					}
 				}
+				while(System.currentTimeMillis() - cmdStart < 500 && cmdList.size() > 1) {}
+				cmdStart = System.currentTimeMillis();
 			}
 		}
 	}
