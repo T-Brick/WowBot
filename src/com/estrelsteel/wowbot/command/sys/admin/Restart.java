@@ -15,7 +15,7 @@ public class Restart implements Command {
 	
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent e) {
-		if(e.getAuthor().getId().equals(WowBot.owner)) {
+		if(e.getAuthor().getIdLong() == WowBot.owner) {
 			return true;
 		}
 		return false;

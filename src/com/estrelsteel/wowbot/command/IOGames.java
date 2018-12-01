@@ -85,7 +85,7 @@ public class IOGames implements Command {
 		else if(args[1].trim().equalsIgnoreCase("list")) {
 			ArrayList<String> names = new ArrayList<String>();
 			names.addAll(games.keySet());
-			String o = WowBot.convertListToString(names);
+			String o = WowBot.convertListToString(names, true);
 			System.out.println(WowBot.getMsgStart() + e.getAuthor().getName() + " requested the list of io games.");
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.setColor(e.getMember().getColor());
@@ -138,7 +138,7 @@ public class IOGames implements Command {
 			}
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " requested the '" + args[1].trim() + "' io game, but it doesn't exist, now searching for it.");
 			ArrayList<String> match = search(request);
-			msg = WowBot.convertListToString(match);
+			msg = WowBot.convertListToString(match, true);
 			if(match.size() == 0) {
 				UserHandler.sendPublicMessage("That io game does not exist.", e, true);
 			}
@@ -154,7 +154,7 @@ public class IOGames implements Command {
 		else {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " is requesting an io game with " + request + "in it's name.");
 			ArrayList<String> match = search(request);
-			msg = WowBot.convertListToString(match);
+			msg = WowBot.convertListToString(match, true);
 			if(match.size() == 0) {
 				UserHandler.sendPublicMessage("Could not find any matches.", e, true);
 			}

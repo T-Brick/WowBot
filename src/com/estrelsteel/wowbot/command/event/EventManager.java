@@ -53,7 +53,7 @@ public class EventManager implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has issued command: " + e.getMessage().getContent());
+		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has issued command: " + e.getMessage().getContentRaw());
 		if(args.length >= 5) {
 			if(args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("+")) {
 				String val = Event.version + "";

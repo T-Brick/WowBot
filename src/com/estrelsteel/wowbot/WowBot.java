@@ -10,19 +10,26 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Game.GameType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.utils.PermissionUtil;
 
 import com.estrelsteel.wowbot.command.Command;
 import com.estrelsteel.wowbot.command.IOGames;
 import com.estrelsteel.wowbot.command.Kaomoji;
+import com.estrelsteel.wowbot.command.audio.AudioOperations;
 import com.estrelsteel.wowbot.command.audio.AudioPerms;
-import com.estrelsteel.wowbot.command.audio.Pause;
 import com.estrelsteel.wowbot.command.audio.Play;
-import com.estrelsteel.wowbot.command.audio.Queue;
-import com.estrelsteel.wowbot.command.audio.SFX;
-import com.estrelsteel.wowbot.command.audio.Skip;
 import com.estrelsteel.wowbot.command.audio.Summon;
-import com.estrelsteel.wowbot.command.audio.Volume;
 import com.estrelsteel.wowbot.command.audio.WowAudioCore;
+import com.estrelsteel.wowbot.command.audio.queue.Queue;
+import com.estrelsteel.wowbot.command.audio.runtime.Link;
+import com.estrelsteel.wowbot.command.audio.runtime.Pause;
+import com.estrelsteel.wowbot.command.audio.runtime.Volume;
+import com.estrelsteel.wowbot.command.audio.sfx.SFX;
+import com.estrelsteel.wowbot.command.audio.skip.Skip;
 import com.estrelsteel.wowbot.command.event.Event;
 import com.estrelsteel.wowbot.command.event.EventManager;
 import com.estrelsteel.wowbot.command.sys.Changelog;
@@ -31,6 +38,7 @@ import com.estrelsteel.wowbot.command.sys.Help;
 import com.estrelsteel.wowbot.command.sys.Info;
 import com.estrelsteel.wowbot.command.sys.Random;
 import com.estrelsteel.wowbot.command.sys.Save;
+import com.estrelsteel.wowbot.command.sys.UpdateRoles;
 import com.estrelsteel.wowbot.command.sys.WhoIs;
 import com.estrelsteel.wowbot.command.sys.admin.Blacklist;
 import com.estrelsteel.wowbot.command.sys.admin.Restart;
@@ -45,13 +53,12 @@ import com.estrelsteel.wowbot.command.user.Watch;
 import com.estrelsteel.wowbot.command.wow.DynamicWow;
 import com.estrelsteel.wowbot.file.GameFile;
 import com.estrelsteel.wowbot.file.Settings;
-import com.estrelsteel.wowbot.games.GameCentre;
 import com.estrelsteel.wowbot.user.UserHandler;
 
 public class WowBot {
 	
 	public static Settings settings;
-	public static final String title = "WowBot v1.7a (18)";
+	public static final String title = "WowBot v1.8a (19)";
 	public static long owner;
 	public static long id;
 	public static String path = GameFile.getCurrentPath();
@@ -62,11 +69,10 @@ public class WowBot {
 	private final String tolken;
 	private HashMap<String, Command> cmds;
 	private Parser p = new Parser();
-	@SuppressWarnings("unused")
-	private GameCentre gc;
 	private EventManager em;
 	private DynamicWow wow;
 	private WowAudioCore wac;
+	private AudioOperations audOp;
 	private SFX sfx;
 	private UserHandler uh;
 	private long lastSave;
@@ -75,11 +81,9 @@ public class WowBot {
 	private Serial serial;
 	
 	public static void main(String[] args) {
-//		TicTacToe ttt = new TicTacToe();
-//		ttt.printGame();
 		System.out.println(title + "\n\tBy: EstrelSteel");
 		settings = new Settings();
-		if(args.length > 0) {
+		if(args != null && args.length > 0) {
 			path = args[0];
 		}
 		try {
@@ -107,7 +111,7 @@ public class WowBot {
 		try {
 			l = new Listener(this, null);
 			jda = new JDABuilder(AccountType.BOT).addEventListener(l).setToken(tolken).buildBlocking();
-			jda.getPresence().setGame(Game.of(title));
+			jda.getPresence().setGame(Game.of(GameType.DEFAULT, title));
 			jda.setAutoReconnect(true);
 		}
 		catch(Exception e) {
@@ -122,11 +126,17 @@ public class WowBot {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		gc = new GameCentre();
 		cmds = new HashMap<String, Command>();
 		wow = new DynamicWow();
-		wac = new WowAudioCore(jda);
+		wac = new WowAudioCore(this);
+		Queue queue = new Queue(wac);
+		Skip skip = new Skip(wac, uh);
+		
+		updateRoles(null);
+		
+		audOp = new AudioOperations().setQueueReset(queue::resetQueue).setQueueMessageId(queue::getQueueMessageId).setSkip(skip::skipTrack);
 		sfx = new SFX(new GameFile(path + "/sounds.txt"), wac, uh);
+		
 		if(info.getLines().get(3).trim().equalsIgnoreCase("true")) {
 			System.out.println(WowBot.getMsgStart() + "Hotkeyboard enabled.");
 			serial = new Serial(sfx ,wac, info.getLines().get(4).trim().split(" "),info.getLines().get(5).trim().split(" "),  jda.getGuilds());
@@ -141,7 +151,6 @@ public class WowBot {
 		cmds.put("w0vv", wow);
 		cmds.put("vv0w", wow);
 		
-//		cmds.put("ttt", new TTT(gc));
 		cmds.put("event", em);
 		cmds.put("shutdown", new ShutDown(this));
 		cmds.put("stop", new ShutDown(this));
@@ -157,7 +166,6 @@ public class WowBot {
 		cmds.put("politics", new Politics(jda.getGuilds(), uh));
 		cmds.put("color", new Colour(uh));
 		cmds.put("colour", new Colour(uh));
-//		cmds.put("playwow", new PlayWow());
 		cmds.put("clean", new Clean(this));
 		cmds.put("timeout", new TimeOut(jda.getGuilds()));
 		cmds.put("blacklist", new Blacklist(jda.getGuilds()));
@@ -170,12 +178,13 @@ public class WowBot {
 		cmds.put("play", new Play(wac, new GameFile(path + "/audio-whitelist.txt"), uh));
 		cmds.put("pause", new Pause(wac, true, uh));
 		cmds.put("resume", new Pause(wac, false, uh));
-		cmds.put("skip", new Skip(wac, 0.25, uh));
-		cmds.put("queue", new Queue(wac));
+		cmds.put("skip", skip);
+		cmds.put("queue", queue);
 		cmds.put("summon", new Summon(wac, uh));
 		cmds.put("volume", new Volume(wac, uh));
 		cmds.put("vol", new Volume(wac, uh));
 		cmds.put("audioperms", new AudioPerms(uh));
+		cmds.put("link", new Link(wac));
 		cmds.put("team", new Team(2, 2));
 		cmds.put("die", new Random(6));
 		cmds.put("dice", new Random(6));
@@ -185,6 +194,7 @@ public class WowBot {
 		cmds.put("ran", new Random(0));
 		cmds.put("iogames", new IOGames(new GameFile(path + "/iogames.txt")));
 		cmds.put("iogame", new IOGames(new GameFile(path + "/iogames.txt")));
+		cmds.put("updateroles", new UpdateRoles(this));
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
 		running = true;
@@ -195,15 +205,7 @@ public class WowBot {
 			args = s.split(" ");
 			switch(args[0]) {
 			case "shutdown":
-				System.out.println(WowBot.getMsgStart() + "console has issued a shutdown.");
-				System.out.println(WowBot.getMsgStart() + "Shutting down...");
-				shutdown(false);
-				break;
 			case "stop":
-				System.out.println(WowBot.getMsgStart() + "console has issued a shutdown.");
-				System.out.println(WowBot.getMsgStart() + "Shutting down...");
-				shutdown(false);
-				break;
 			case "exit":
 				System.out.println(WowBot.getMsgStart() + "console has issued a shutdown.");
 				System.out.println(WowBot.getMsgStart() + "Shutting down...");
@@ -218,6 +220,7 @@ public class WowBot {
 				System.out.println(WowBot.getMsgStart() + "console has requested the info page.");
 				System.out.println("" + WowBot.title + "\n\tBy: EstrelSteel\n\nGitHub: https://github.com/EstrelSteel/WowBot");
 				break;
+			case "?":
 			case "help":
 				System.out.println(WowBot.getMsgStart() + "console has requested the help page.");
 				System.out.println("COMMANDS: help, shutdown, save, info, say, queue");
@@ -230,7 +233,7 @@ public class WowBot {
 						msg = msg + args[i] + " ";
 					}
 					msg.trim();
-					jda.getPresence().setGame(Game.of(msg));
+					jda.getPresence().setGame(Game.of(GameType.DEFAULT, msg));
 				}
 				break;
 			case "queue":
@@ -238,7 +241,7 @@ public class WowBot {
 				if(wac.getPlayer().getPlayingTrack() != null) {
 					System.out.println("Currently playing: " + wac.getPlayer().getPlayingTrack().getInfo().title);
 					for(int i = 0; i < wac.getAudioQueue().getQueue().size(); i++) {
-						System.out.println("\t" + (i + 1) + ".) " + wac.getAudioQueue().getQueue().get(i).getInfo().title);
+						System.out.println("\t" + (i + 1) + ".) " + wac.getAudioQueue().getQueue().get(i).getTrack().getInfo().title);
 					}
 				}
 				else {
@@ -284,6 +287,9 @@ public class WowBot {
 				shutdown(true);
 				WowBot.main(null);
 				break;
+			case "updateroles":
+				updateRoles(null);
+				break;
 			default:
 				System.out.println("Unknown command, " + args[0] + "\nUse help for a list of commands.");
 			}
@@ -300,6 +306,14 @@ public class WowBot {
 	
 	public WowAudioCore getAudioCore() {
 		return wac;
+	}
+	
+	public AudioOperations getAudioOperations() {
+		return audOp;
+	}
+	
+	public JDA getJDA() {
+		return jda;
 	}
 	
 	public void handleCommand(ArrayList<Parser.CommandContainer> cmdList) {
@@ -333,11 +347,36 @@ public class WowBot {
 		}
 	}
 	
+	public void updateRoles(Guild g) {
+		if(g == null) {
+			for(Guild guild : jda.getGuilds()) {
+				updateRoles(guild);
+			}
+			return;
+		}
+		ArrayList<Long> roles = new ArrayList<Long>();
+		for(Member m : g.getMembers()) {
+			for(Role r : m.getRoles()) {
+				if(!roles.contains(r.getIdLong())) roles.add(r.getIdLong());
+			}
+		}
+		for(Role r : g.getRoles()) {
+			if(!roles.contains(r.getIdLong()) && PermissionUtil.canInteract(g.getMember(jda.getSelfUser()), r) && !r.getName().equals("@everyone") && r.isMentionable()) {
+				r.getManager().setMentionable(false).queue();
+				System.out.println("Hiding role: " + r.getName() + " in guild: " + g.getName());
+			}
+			else if(roles.contains(r.getIdLong()) && PermissionUtil.canInteract(g.getMember(jda.getSelfUser()), r) && !r.getName().equals("@everyone")) {
+				r.getManager().setMentionable(true).queue();
+			}
+		}
+	}
+	
 	public void save() {
 		lastSave = System.currentTimeMillis();
 		try {
 			em.saveEvents(path + "/events.txt");
 			uh.saveUsers(path + "/users.txt");
+			sfx.saveSoundlist();
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
@@ -354,7 +393,22 @@ public class WowBot {
 		}
 	}
 	
-	public static String convertListToString(ArrayList<String> list) {
+	public static String convertListToString(ArrayList<String> list, boolean sort) {
+		if(sort) {
+			boolean sorted = true;
+			int min;
+			for(int i = 0; i < list.size(); i++) {
+				min = i;
+				for(int j = i + 1; j < list.size(); j++) {
+					if(list.get(j).compareTo(list.get(min)) < 0) {
+						min = j;
+					}
+					if(sorted && list.get(j).compareTo(list.get(j - 1)) < 0) sorted = false;
+				}
+				if(sorted) break;
+				list.add(i, list.remove(min));
+			}
+		}
 		String msg = "";
 		for(int j = 0; j < list.size(); j++) {
 			if(j == 0) {

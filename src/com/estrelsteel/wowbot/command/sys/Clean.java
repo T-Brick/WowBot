@@ -40,7 +40,7 @@ public class Clean implements Command {
 					m.get(i).delete().reason("Removing clutter").queue();
 					count++;
 				}
-				else if(cmds && m.get(i).getContent().startsWith("~")) {
+				else if(cmds && m.get(i).getContentRaw().startsWith("~")) {
 					m.get(i).delete().reason("Removing clutter").queue();
 					count++;
 				}

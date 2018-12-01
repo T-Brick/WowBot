@@ -53,7 +53,7 @@ public class GroupManager implements Command {
 	//~group create name 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has issued command: " + e.getMessage().getContent());
+		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has issued command: " + e.getMessage().getContentRaw());
 		if(args.length >= 3) {
 			if(args[1].equalsIgnoreCase("create")) {
 				String val = Group.version + "";

@@ -1,4 +1,4 @@
-package com.estrelsteel.wowbot.command.audio;
+package com.estrelsteel.wowbot.command.audio.sfx;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +12,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.command.audio.VoiceHelp;
+import com.estrelsteel.wowbot.command.audio.WowAudioCore;
 import com.estrelsteel.wowbot.file.GameFile;
 import com.estrelsteel.wowbot.user.UserHandler;
 import com.estrelsteel.wowbot.user.UserSettings;
@@ -19,9 +21,11 @@ import com.estrelsteel.wowbot.user.UserSettings;
 public class SFX implements Command {
 	
 	private GameFile file;
-	private HashMap<String, String> songs;
+	private HashMap<String, SoundData> songs;
 	private UserHandler uh;
 	private WowAudioCore wac;
+	
+	private final int SFX_VERSION = 1;
 	
 	public SFX(GameFile file, WowAudioCore core, UserHandler uh) {
 		this.file = file;
@@ -37,18 +41,27 @@ public class SFX implements Command {
 	}
 	
 	public void loadSoundlist() throws IOException {
-		songs = new HashMap<String, String>();
+		songs = new HashMap<String, SoundData>();
 		file.setLines(file.readFile());
 		String[] args;
-		for(int i = 0; i < file.getLines().size(); i++) {
-			args = file.getLines().get(i).split(" ");
-			songs.put(args[0], args[1]);
+		if(file.getLines().get(0).equalsIgnoreCase("WOW_SFX_0")) {
+			for(int i = 1; i < file.getLines().size(); i++) {
+				args = file.getLines().get(i).split(" ");
+				songs.put(args[0], new SoundData(args[1]));
+			}
+		}
+		else if(file.getLines().get(0).equalsIgnoreCase("WOW_SFX_1")) {
+			for(int i = 1; i < file.getLines().size(); i++) {
+				args = file.getLines().get(i).split(" ");
+				songs.put(args[0], new SoundData(args[3], Long.parseLong(args[1]), Long.parseLong(args[2])));
+			}
 		}
 	}
 	
 	public void saveSoundlist() throws IOException{
 		file.setLines(new ArrayList<String>());
-		for(Entry<String, String> s : songs.entrySet())  {
+		file.getLines().add("WOW_SFX_" + SFX_VERSION);
+		for(Entry<String, SoundData> s : songs.entrySet())  {
 			file.getLines().add(s.getKey() + " " + s.getValue());
 		}
 		file.saveFile();
@@ -58,7 +71,7 @@ public class SFX implements Command {
 		return file;
 	}
 	
-	public HashMap<String, String> getSoundlist() {
+	public HashMap<String, SoundData> getSoundlist() {
 		return songs;
 	}
 	
@@ -83,12 +96,12 @@ public class SFX implements Command {
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
 		VoiceChannel c = VoiceHelp.determineChannel(e);
+		e.getMessage().delete().queueAfter(30, TimeUnit.SECONDS);
 		if(c != null) {
 			String request = "";
 			boolean find = false;
 			int arg = 1;
 			String msg;
-			e.getMessage().delete().queueAfter(30, TimeUnit.SECONDS);
 			if(args[1].trim().equalsIgnoreCase("find")) {
 				arg++;
 				find = true;
@@ -96,10 +109,11 @@ public class SFX implements Command {
 			else if(args[1].trim().equalsIgnoreCase("list")) {
 				ArrayList<String> names = new ArrayList<String>();
 				names.addAll(songs.keySet());
-				String o = WowBot.convertListToString(names);
+				String o = WowBot.convertListToString(names, true);
 				System.out.println(WowBot.getMsgStart() + e.getAuthor().getName() + " requested the list of sounds.");
 				EmbedBuilder builder = new EmbedBuilder();
 				builder.setColor(e.getMember().getColor());
+//				builder.setTitle("Sound Effects:");
 				builder.addField("Sound Effects:", o, false);
 				builder.setFooter("Type in the beginning of a sound effect to search for it.", e.getGuild().getMemberById(WowBot.id).getUser().getAvatarUrl());
 				e.getTextChannel().sendMessage(builder.build()).queue();
@@ -116,8 +130,23 @@ public class SFX implements Command {
 						e.getTextChannel().sendMessage("This audio file is already in use.").queue();
 						return;
 					}
-					
-					songs.put(args[2].toLowerCase(), args[3]);
+					long start = 0;
+					long end = -1;
+					if(args.length > 6) {
+						end = Long.parseLong(args[5]);
+						start = Long.parseLong(args[4]);
+					}
+					else {
+						switch(args.length) {
+						case 6:
+							end = Long.parseLong(args[5]);
+						case 5:
+							start = Long.parseLong(args[4]);
+						default:
+							break;
+						}
+					}
+					songs.put(args[2].toLowerCase(), new SoundData(args[3], start, end));
 					try {
 						saveSoundlist();
 					}
@@ -142,15 +171,15 @@ public class SFX implements Command {
 			}
 			request = args[arg].trim().toLowerCase();
 			if(!find) {
-				String song = songs.get(request);
+				SoundData song = songs.get(request);
 				if(song != null) {
-					wac.loadTrack(song, wac.switchVoiceChannel(c, false), e, true);
+					wac.loadTrack(song.getPath(), wac.switchVoiceChannel(c, true), e, true, song.getStartTime(), song.getEndTime());
 					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested the '" + request + "' sfx.");
 				}
 				else {
 					System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " requested the '" + args[1].trim() + "' sfx, but it doesn't exist, searching for it.");
 					ArrayList<String> match = search(request);
-					msg = WowBot.convertListToString(match);
+					msg = WowBot.convertListToString(match, true);
 					if(match.size() == 0) {
 						UserHandler.sendPublicMessage("That sound does not exist.", e, true);
 					}
@@ -167,7 +196,7 @@ public class SFX implements Command {
 			else {
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " is requesting a sfx with " + request + "in it's name.");
 				ArrayList<String> match = search(request);
-				msg = WowBot.convertListToString(match);
+				msg = WowBot.convertListToString(match, true);
 				if(match.size() == 0) {
 					UserHandler.sendPublicMessage("Could not find any matches.", e, true);
 				}
@@ -180,7 +209,8 @@ public class SFX implements Command {
 			}
 		}
 		else {
-			e.getTextChannel().sendMessage("You need to be in a voice channel to use this command.").queue();
+			e.getTextChannel().sendMessage("You need to be in a voice channel to use this command.").complete().delete().queueAfter(10, TimeUnit.SECONDS);
+
 		}
 	}
 	
@@ -197,7 +227,7 @@ public class SFX implements Command {
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "sfx [item | list | (add [label] [link]) | reload]"
+		return "USAGE: " + WowBot.settings.getTrigger() + "sfx [item | list | (add [label] [link] <start_ms> <end_ms>) | reload]"
 				+ "\nDESC: plays a sound effect."
 				+ "\n\t[item] : plays the audio file with the name [item]."
 				+ "\n\t[list] : sends the user a list of all the sound effects avaliable."

@@ -77,10 +77,10 @@ public class DynamicWow implements Command {
 		String ender = "";
 		if(p) {
 			if(e.getTextChannel() != null) {
-				e.getTextChannel().sendFile(new File(WowBot.path + "/wow.png"), null).queue();
+				e.getTextChannel().sendFile(new File(WowBot.path + "/wow.png")).queue();
 			}
 			else {
-				e.getAuthor().openPrivateChannel().complete().sendFile(new File(WowBot.path + "/wow.png"), null).queue();
+				e.getAuthor().openPrivateChannel().complete().sendFile(new File(WowBot.path + "/wow.png")).queue();
 			}
 		}
 		else {
@@ -116,6 +116,7 @@ public class DynamicWow implements Command {
 			}
 			UserHandler.sendPublicMessage(starter + args[0] + ender, e, true);
 		}
+		e.getMessage().delete().queue();
 	}
 
 	@Override

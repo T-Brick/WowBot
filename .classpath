@@ -16,7 +16,7 @@
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/test/slf4j-api-1.7.22.jar"/>
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/slf4j-1.7.25/slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/jSSC-2.7.0-Release/jssc.jar"/>
-	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/JDA-3.3.1_284-withDependencies.jar"/>
 	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/lavaplayer/build/libs/lavaplayer-1.0-all.jar"/>
+	<classpathentry kind="lib" path="/Users/justin/Desktop/SERVER/Discord/JDA-3.8.1_439-withDependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

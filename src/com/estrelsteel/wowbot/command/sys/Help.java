@@ -1,11 +1,12 @@
 package com.estrelsteel.wowbot.command.sys;
 
+import java.util.concurrent.TimeUnit;
+
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
-import com.estrelsteel.wowbot.user.UserHandler;
 
 public class Help implements Command {
 	
@@ -14,7 +15,7 @@ public class Help implements Command {
 	
 	public Help(WowBot b) {
 		this.b = b;
-		cmds = new String[29];
+		cmds = new String[31];
 		int i = 0;
 		cmds[i] = "assemble"; i++;
 		cmds[i] = "audioperms"; i++;
@@ -26,6 +27,7 @@ public class Help implements Command {
 		cmds[i] = "iogames"; i++;
 		cmds[i] = "info"; i++;
 		cmds[i] = "kaomoji"; i++;
+		cmds[i] = "link"; i++;
 		cmds[i] = "mute"; i++;
 		cmds[i] = "pause"; i++;
 		cmds[i] = "play"; i++;
@@ -41,6 +43,7 @@ public class Help implements Command {
 		cmds[i] = "summon"; i++;
 		cmds[i] = "team"; i++;
 		cmds[i] = "timeout"; i++;
+		cmds[i] = "updateroles"; i++;
 		cmds[i] = "volume"; i++;
 		cmds[i] = "watch"; i++;
 		cmds[i] = "whois"; i++;
@@ -86,12 +89,13 @@ public class Help implements Command {
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.setColor(e.getMember().getColor());
 			builder.addField("Command List:", msg, false);
-			e.getTextChannel().sendMessage(builder.build()).queue();
+			e.getTextChannel().sendMessage(builder.build()).complete().delete().queueAfter(30, TimeUnit.SECONDS);
 		}
 		else {
-			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested help for the" + args[1].trim() + " command.");
-			UserHandler.sendPublicMessage(b.getCommands().get(args[1]).help(), e, true);
+			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested help for the " + args[1].trim() + " command.");
+			e.getTextChannel().sendMessage(b.getCommands().get(args[1]).help()).complete().delete().queueAfter(30, TimeUnit.SECONDS);
 		}
+		e.getMessage().delete().queue();
 	}
 
 	@Override

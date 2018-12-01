@@ -9,8 +9,12 @@ public class Parser {
 		ArrayList<CommandContainer> containers = new ArrayList<CommandContainer>();
 		System.out.println(raw);
 		String[] lines = raw.split("\n");
+		int multiplier = 0;
 		for(int j = 0; j < lines.length && j < 10; j++) {
-			lines[j] = lines[j].substring(WowBot.settings.getTrigger().length());
+			while(lines[j].startsWith(WowBot.settings.getTrigger()) && multiplier < 11) {
+				lines[j] = lines[j].substring(WowBot.settings.getTrigger().length());
+				multiplier++;
+			}
 			String[] args = lines[j].split(" ");
 			for(int i = 0; i < args.length; i++) {
 				args[i] = args[i].trim();
@@ -18,7 +22,8 @@ public class Parser {
 			if(args.length >= 1) {
 				args[0].toLowerCase();
 			}
-			containers.add(new CommandContainer(args, e, lines[j]));
+			for(int i = 0; i < multiplier; i++) containers.add(new CommandContainer(args, e, lines[j]));
+			multiplier = 0;
 		}
 		return containers;
 	}

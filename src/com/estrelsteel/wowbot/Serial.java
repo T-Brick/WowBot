@@ -8,9 +8,9 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import net.dv8tion.jda.core.entities.Guild;
 
-import com.estrelsteel.wowbot.command.audio.SFX;
 import com.estrelsteel.wowbot.command.audio.VoiceHelp;
 import com.estrelsteel.wowbot.command.audio.WowAudioCore;
+import com.estrelsteel.wowbot.command.audio.sfx.SFX;
 
 public class Serial implements SerialPortEventListener {
 	
@@ -99,7 +99,7 @@ public class Serial implements SerialPortEventListener {
 										System.out.println(WowBot.getMsgStart() + "You need to be in a voice channel first.");
 									}
 									else {
-										wac.loadTrack(sfx.getSoundlist().get(sfx_list[i]), wac.switchVoiceChannel(null, false), null, false);
+										wac.loadTrack(sfx.getSoundlist().get(sfx_list[i]).getPath(), wac.switchVoiceChannel(null, false), null, false);
 										System.out.println(WowBot.getMsgStart() + "Playing " + sfx_list[i] + " via hotkey.");
 									}
 								}
@@ -146,7 +146,7 @@ public class Serial implements SerialPortEventListener {
 												else if(dyn >= 768 && dyn < 1024) {
 													s = 4;
 												}
-												wac.loadTrack(sfx.getSoundlist().get(dynamic_list[s]), wac.switchVoiceChannel(null, false), null, false);
+												wac.loadTrack(sfx.getSoundlist().get(dynamic_list[s]).getPath(), wac.switchVoiceChannel(null, false), null, false);
 												System.out.println(WowBot.getMsgStart() + "Playing " + dynamic_list[s] + " via dynamic hotkey.");
 											}
 											

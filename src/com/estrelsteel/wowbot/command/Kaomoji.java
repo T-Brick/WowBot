@@ -63,7 +63,7 @@ public class Kaomoji implements Command {
 			ArrayList<String> all = new ArrayList<String>();
 			all.addAll(kaomoji.keySet());
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " has requested all kaomoji.");
-			msg = WowBot.convertListToString(all);
+			msg = WowBot.convertListToString(all, true);
 			System.out.println(msg.length());
 			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(0, 1801) + "```", false);
 			uh.findUser(e.getAuthor().getIdLong()).sendPrivateMessage(e.getAuthor(), "```" + msg.substring(1801) + "```", false);
@@ -83,7 +83,7 @@ public class Kaomoji implements Command {
 			else {
 				System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " requested the '" + args[1].trim() + "' kaomoji, but it doesn't exist, searching for it.");
 				ArrayList<String> match = search(request);
-				msg = WowBot.convertListToString(match);
+				msg = WowBot.convertListToString(match, true);
 				if(match.size() == 0) {
 					UserHandler.sendPublicMessage("That kaomoji does not exist.", e, true);
 				}
@@ -95,7 +95,7 @@ public class Kaomoji implements Command {
 		else {
 			System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " is requesting kaomoji with " + request + "in it's name.");
 			ArrayList<String> match = search(request);
-			msg = WowBot.convertListToString(match);
+			msg = WowBot.convertListToString(match, true);
 			if(match.size() == 0) {
 				UserHandler.sendPublicMessage("Could not find any matches.", e, true);
 			}

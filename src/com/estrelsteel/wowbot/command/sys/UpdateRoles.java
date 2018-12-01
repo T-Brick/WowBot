@@ -1,15 +1,16 @@
-package com.estrelsteel.wowbot.command.wow;
+package com.estrelsteel.wowbot.command.sys;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
 
-@Deprecated
-public class VVoVV implements Command {
+public class UpdateRoles implements Command {
 	
-	public VVoVV() {
-		
+	private WowBot b;
+	
+	public UpdateRoles(WowBot b) {
+		this.b = b;
 	}
 	
 	@Override
@@ -19,14 +20,14 @@ public class VVoVV implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent e) {
-		System.out.println(WowBot.getMsgStart() + "" + e.getAuthor().getName() + " says Wow.");
-		e.getTextChannel().sendMessage("*VVOVV*").queue();
-
+		b.updateRoles(e.getGuild());
 	}
 
 	@Override
 	public String help() {
-		return "USAGE: " + WowBot.settings.getTrigger() + "vvovv";
+		return "USAGE: " + WowBot.settings.getTrigger() + "updateroles"
+				+ "\nDESC: updates the roles that can be mentioned."
+				+ "\nPERMS: all";
 	}
 
 	@Override

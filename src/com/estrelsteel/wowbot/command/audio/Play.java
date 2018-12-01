@@ -60,7 +60,23 @@ public class Play implements Command {
 				}
 			}
 			if(found) {
-				wac.loadTrack(args[1], wac.switchVoiceChannel(c, false), e, true);
+				long start = 0;
+				long end = -1;
+				if(args.length > 4) {
+					end = Long.parseLong(args[3]);
+					start = Long.parseLong(args[2]);
+				}
+				else {
+					switch(args.length) {
+					case 4:
+						end = Long.parseLong(args[3]);
+					case 3:
+						start = Long.parseLong(args[2]);
+					default:
+						break;
+					}
+				}
+				wac.loadTrack(args[1], wac.switchVoiceChannel(c, false), e, true, start, end);
 				e.getMessage().delete().queueAfter(30, TimeUnit.SECONDS);
 			}
 			else {

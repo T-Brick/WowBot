@@ -1,4 +1,4 @@
-package com.estrelsteel.wowbot.command.audio;
+package com.estrelsteel.wowbot.command.audio.runtime;
 
 import java.util.concurrent.TimeUnit;
 
@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import com.estrelsteel.wowbot.WowBot;
 import com.estrelsteel.wowbot.command.Command;
+import com.estrelsteel.wowbot.command.audio.WowAudioCore;
 import com.estrelsteel.wowbot.user.UserHandler;
 import com.estrelsteel.wowbot.user.UserSettings;
 
